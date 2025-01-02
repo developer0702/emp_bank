@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+metadata:
+  askId: UHGWM110-005677
+  riskCategory: 0
+  contactEmail: Team_OBI@ds.uhc.com
+  caAgileId: does not use rally
+  projectKey: com.optum.ftps:ob-core-contribution-api
+  projectFriendlyName: ob-core-contribution-api
+  componentType: code
+  targetQG: GATE_08

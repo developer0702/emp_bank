@@ -1,0 +1,5 @@
+# Default ignore everything
+*
+# Include:
+!target/*.jar
+!src/main/resources/*

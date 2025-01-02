@@ -1,0 +1,9 @@
+---
+self-hosted-runner:
+  labels:
+  - uhg-runner
+  - uhg-ghas
+  - core-access
+  - runnerstage
+  - uhg-runner-m
+  - uhg-runner-l

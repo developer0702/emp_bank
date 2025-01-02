@@ -1,0 +1,59 @@
+---
+name: hcc-k8s-apply-netpol
+permissions:
+  actions: read
+  contents: write
+  pull-requests: read
+"on":
+  workflow_dispatch:
+    inputs:
+      target-env:
+        description: Target environment to deploy to
+        required: true
+        type: environment
+        default: dev
+jobs:
+  apply-netpol:
+    environment: "${{inputs.target-env}}"
+    runs-on: uhg-runner
+    steps:
+    - name: checkout out repository code
+      uses: actions/checkout@v4
+    - name: Check target env
+      id: check-target-env
+      shell: bash
+      run: |
+        echo "target env is: ${{ inputs.target-env }}"
+        if [[ "${{ inputs.target-env }}" == "stage" ]] || [[ "${{ inputs.target-env }}" == "prod" ]]; then
+          echo "Dual region deploy required for ELR and CTC clusters."
+          echo "dual_region=true" >> $GITHUB_OUTPUT
+        else
+          echo "Single region deployment to ELR cluster."
+          echo "dual_region=false" >> $GITHUB_OUTPUT
+        fi
+    - name: Set Kubernetes Context - ELR
+      uses: azure/k8s-set-context@v4
+      with:
+        method: kubeconfig
+        kubeconfig: "${{ secrets.KUBE_CONTEXT_ELR }}"
+    - name: Apply Network Policies - ELR
+      shell: bash
+      run: |
+        ADDITIONAL_PORTS=k8s/environment/${{ inputs.target-env }}/ob-core-additional-ports.yml
+        if [ -f "$ADDITIONAL_PORTS" ]; then
+        kubectl apply -f $ADDITIONAL_PORTS -n ${{ vars.K8S_NAMESPACE }}
+        fi
+    - name: Set Kubernetes Context - CTC
+      if: steps.check-target-env.outputs.dual_region == 'true'
+      uses: azure/k8s-set-context@v4
+      with:
+        method: kubeconfig
+        kubeconfig: "${{ secrets.KUBE_CONTEXT_CTC }}"
+    - name: Apply Network policies - CTC
+      if: steps.check-target-env.outputs.dual_region == 'true'
+      shell: bash
+      run: |
+        ADDITIONAL_PORTS=k8s/environment/${{ inputs.target-env }}/ob-core-additional-ports.yml
+        if [ -f "$ADDITIONAL_PORTS" ]; then
+        kubectl apply -f $ADDITIONAL_PORTS -n ${{ vars.K8S_NAMESPACE }}
+        fi

@@ -1,0 +1,53 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ob-core-additional-ports
+  namespace: cb-contri-stage
+spec:
+  ingress:
+  - ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8081
+    - protocol: TCP
+      port: 8009
+    - protocol: TCP
+      port: 8082
+    - protocol: TCP
+      port: 443
+  egress:
+  - ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 9200
+    - protocol: TCP
+      port: 9300
+    - protocol: TCP
+      port: 3306
+    - protocol: TCP
+      port: 33060
+    - protocol: TCP
+      port: 5432
+    - protocol: TCP
+      port: 1433
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 53
+    - protocol: TCP
+      port: 6444
+    - protocol: TCP
+      port: 4317
+    - protocol: TCP
+      port: 9093
+    - protocol: TCP
+      port: 50002
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
