@@ -10,10 +10,10 @@
     </parent>
 
     <groupId>com.optum.ftps</groupId>
-    <artifactId>ob-core-contribution-api</artifactId>
+    <artifactId>ob-core-employerDetails-api</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
-    <name>ob-core-contribution-api</name>
+    <name>ob-core-employerDetails-api</name>
 
     <properties>
 
@@ -31,7 +31,8 @@
         <sonar.language>java</sonar.language>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.exclusions>**/*.xml</sonar.exclusions>
-        <sonar.coverage.exclusions>**/constants/**/*.*,**/Application.*,**/exceptions/**/*,**/api/**/*,**/model/**/*,**/config/**/*, **/mapper/**/*</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>**/constants/**/*.*,**/Application.*,**/exceptions/**/*,**/api/**/*,**/model/**/*,**/config/**/*,
+            **/mapper/**/*</sonar.coverage.exclusions>
 
     </properties>
 
@@ -338,15 +339,15 @@
                 <version>${openapigenerator.version}</version>
                 <executions>
                     <execution>
-                        <id>ob-contribution-api-generate</id>
+                        <id>ob-employer-details-api-generate</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/contribution-api-spec.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/employer-details-api-spec.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.optum.ftps.ob.core.contribution.api.v1</apiPackage>
-                            <modelPackage>com.optum.ftps.ob.core.contribution.model.v1</modelPackage>
+                            <apiPackage>com.optum.ftps.ob.core.employerDetails.api.v1</apiPackage>
+                            <modelPackage>com.optum.ftps.ob.core.employerDetails.model.v1</modelPackage>
                             <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
                             <configOptions>
                                 <java21>true</java21>
@@ -361,7 +362,7 @@
                                     @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)</additionalModelTypeAnnotations>
                             </configOptions>
                             <importMappings>
-                                <importMapping>ErrorResponse=com.optum.ftps.ob.core.contribution.exceptions.model.ErrorResponse</importMapping>
+                                <importMapping>ErrorResponse=com.optum.ftps.ob.core.employerDetails.exceptions.model.ErrorResponse</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

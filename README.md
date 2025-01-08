@@ -1,6 +1,6 @@
-# ob-core-contribution-api
+# ob-core-employerDetails-api
 
-The Contribution API service.
+The EmployerDetails API service.
 
 > [!IMPORTANT]
 > TODO: Add quickstart guide and local setup instructions, refer to

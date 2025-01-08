@@ -38,21 +38,6 @@ jobs:
     environment: "${{inputs.target-env}}"
     runs-on: uhg-runner
     steps:
-# TODO: Determine why the vault credentials are not working from within the github runner, once that is resolved, this can be re-enabled
-#      - name: Import Secrets
-#        id: import-secrets
-#        uses: hashicorp/vault-action@v3.0.0
-#        with:
-#          url: ${{ vars.VAULT_URL }}
-#          namespace: OPTUM/APP/FTPS/${{ vars.VAULT_PATH }}
-#          method: approle
-#          roleId: "${{ secrets.VAULT_APPROLE_ROLEID }}"
-#          secretId: "${{ secrets.VAULT_APPROLE_SECRETID }}"
-#          tlsSkipVerify: true
-#          secrets: |
-#            ${{ vars.VAULT_PATH }}/obi/data/contributions-api KUBE_CONTEXT_${{ inputs.datacenter }} | KUBE_CONTEXT ;
-#            ${{ vars.VAULT_PATH }}/obi/data/contributions-api OB_CORE_SVC_PWD ;
-#            ${{ vars.VAULT_PATH }}/obi/data/contributions-api OB_CORE_SVC_USR ;
     - name: checkout out repository code
       uses: actions/checkout@v4
     - name: Check target env

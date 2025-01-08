@@ -1,0 +1,414 @@
+---
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Employer Details API
+  description: OpenAPI specification for Get Employer Details APIs
+  termsOfService: https://changeme.optum.com/
+  contact:
+    name: Optum Financial EUREKA Team
+    email: Team_EUREKA@ds.uhc.com
+    url: https://www.optum.com/
+paths:
+  /getEmployerDetails:
+    get:
+      operationId: getEmployerDetails
+      summary: Retrieve employer details based on employer group Id
+      tags:
+      - EmployerDetails
+      parameters:
+      - $ref: "#/components/parameters/QueryEmployerGroupId"
+      responses:
+        "200":
+          description: Employer Details By Id response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployerDetailsResponse"
+  /updEmployerBankDetails:
+    put:
+      operationId: updEmployerBankDetails
+      summary: Update employer bank details based on group Id
+      tags:
+      - EmployerBankDetails
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEmpBankDetailsRequest"
+      responses:
+        "200":
+          description: Update Employer Bank Details Updated response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateEmpBankDetailsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponse"
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+        "503":
+          $ref: "#/components/responses/UnexpectedErrorResponse"
+components:
+  responses:
+    BadRequestErrorResponse:
+      description: Invalid element on request.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFoundErrorResponse:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ServerErrorResponse:
+      description: Server failed to process the request.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    UnexpectedErrorResponse:
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    EmployerDetailsResponse:
+      description: valid response upon successful details retrieval
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EmployerDetailsResponse"
+    UpdateEmpBankDetailsResponse:
+      description: valid response upon successful details updation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateEmpBankDetailsResponse"
+  parameters:
+    QueryEmployerGroupId:
+      in: query
+      name: empGroupId
+      required: true
+      schema:
+        type: string
+        description: Employer Group Id to get employer Details
+  schemas:
+    UpdateEmpBankDetailsRequest:
+      type: object
+      required:
+      - employerGroupId
+      - requestId
+      - requestUserId
+      - sourceSystemId
+      properties:
+        employerGroupId:
+          type: string
+        employerBankDetail:
+          type: object
+          properties:
+            contributionBankAccounts:
+              type: array
+              items: null
+          $ref: "#/components/schemas/ContributionBankAccount"
+        requestId:
+          type: string
+        requestUserId:
+          type: string
+        sourceSystemId:
+          type: string
+    UpdateEmpBankDetailsResponse:
+      type: object
+      properties:
+        employerGroupId:
+          type: string
+        employerBankDetail:
+          type: object
+          properties:
+            contributionBankAccounts:
+              type: array
+              items: null
+          $ref: "#/components/schemas/ContributionBankAccount"
+        requestId:
+          type: string
+        requestUserId:
+          type: string
+        sourceSystemId:
+          type: string
+        status:
+          $ref: "#/components/schemas/Status"
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorItem"
+    ErrorItem:
+      type: object
+      properties:
+        statusCode:
+          type: string
+          description: The status code based on the type of error.
+          example: 2
+        severity:
+          type: string
+          example: ERR
+        statusDescription:
+          type: string
+          example: INCORRECT INPUT FORMAT
+    Status:
+      type: object
+      properties:
+        statusCode:
+          type: string
+        severity:
+          type: string
+        statusDescription:
+          type: string
+    EmployerDetailsResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+        status:
+          $ref: "#/components/schemas/Status"
+        employer:
+          type: array
+          items:
+            $ref: "#/components/schemas/Employer"
+    Employer:
+      type: object
+      properties:
+        employerGroupId:
+          type: string
+        employerName:
+          type: string
+        employerSetupStatus:
+          type: string
+        UHGLineOfBusiness:
+          type: string
+        address:
+          $ref: "#/components/schemas/Address"
+        contributionBankAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContributionBankAccount"
+        employerHDHPPolicy:
+          $ref: "#/components/schemas/EmployerHDHPPolicy"
+        payerDetail:
+          $ref: "#/components/schemas/PayerDetail"
+        productDetails:
+          $ref: "#/components/schemas/ProductDetails"
+        empBankFeeScheduleName:
+          type: string
+    Address:
+      type: object
+      properties:
+        addressTypeCode:
+          $ref: "#/components/schemas/AddressTypeCode"
+        primaryAddressIndicator:
+          type: string
+        addressLines:
+          $ref: "#/components/schemas/AddressLines"
+    AddressTypeCode:
+      type: object
+      properties:
+        code:
+          type: string
+        codeName:
+          type: string
+    AddressLines:
+      type: object
+      properties:
+        addressDeliveryLine1:
+          type: string
+        addressDeliveryLine2:
+          type: string
+        addressCity:
+          type: string
+        addressState:
+          $ref: "#/components/schemas/AddressState"
+        addressPostalCode:
+          $ref: "#/components/schemas/AddressPostalCode"
+    AddressState:
+      type: object
+      properties:
+        stateCode:
+          type: string
+        stateName:
+          type: string
+    AddressPostalCode:
+      type: object
+      properties:
+        zipCode:
+          type: string
+        zipPlus4:
+          type: string
+        postalCode:
+          type: string
+    ContributionBankAccount:
+      type: object
+      properties:
+        bankAccountIdentifier:
+          $ref: "#/components/schemas/BankAccountIdentifier"
+        bankAccountTypeCode:
+          $ref: "#/components/schemas/BankAccountTypeCode"
+        bankName:
+          type: string
+        bankSequenceNumber:
+          type: string
+        bankAccountNickName:
+          type: string
+        bankAccountStatus:
+          $ref: "#/components/schemas/BankAccountStatus"
+        bankAccountOperation:
+          type: string
+    BankAccountIdentifier:
+      type: object
+      properties:
+        bankAccountNumber:
+          type: string
+        bankRoutingNumber:
+          type: string
+    BankAccountTypeCode:
+      type: object
+      properties:
+        code:
+          type: string
+        codeName:
+          type: string
+    BankAccountStatus:
+      type: object
+      properties:
+        code:
+          type: string
+        codeName:
+          type: string
+    EmployerHDHPPolicy:
+      type: object
+      properties:
+        HDHPEffectiveDate:
+          type: Date
+        HDHPCaseSoldDate:
+          type: Date
+    PayerDetail:
+      type: object
+      properties:
+        branchNumber:
+          type: string
+        payerName:
+          type: string
+    ProductDetails:
+      type: object
+      properties:
+        enrollmentMethod:
+          type: string
+        welcomeKitProcessDesc:
+          type: string
+        debitCardOrderDesc:
+          type: string
+        checkOrderDesc:
+          type: string
+        statementDeliveryMethod:
+          type: string
+        lineOfCreditParticipation:
+          type: string
+        signatureMethod:
+          $ref: "#/components/schemas/SignatureMethod"
+        employerProductSetupFee:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmployerProductSetupFee"
+        employerProductBrand:
+          $ref: "#/components/schemas/EmployerProductBrand"
+        investmentDetail:
+          $ref: "#/components/schemas/InvestmentDetail"
+        productOffer:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductOffer"
+    SignatureMethod:
+      type: object
+      properties:
+        employerObtainedInd:
+          type: string
+        wetSignatureInd:
+          type: string
+        eSignatureInd:
+          type: string
+    EmployerProductSetupFee:
+      type: object
+      properties:
+        employerProductSetupFeeCode:
+          $ref: "#/components/schemas/EmployerProductSetupFeeCode"
+        employerProductSetupFeeAmount:
+          type: string
+    EmployerProductSetupFeeCode:
+      type: object
+      properties:
+        code:
+          type: string
+        codeName:
+          type: string
+    EmployerProductBrand:
+      type: object
+      properties:
+        financialProductCardsBrandCode:
+          $ref: "#/components/schemas/FinancialProductCardsBrandCode"
+        finanacialProductWebBrandCode:
+          $ref: "#/components/schemas/FinanacialProductWebBrandCode"
+    FinancialProductCardsBrandCode:
+      type: object
+      properties:
+        code:
+          type: string
+        codeName:
+          type: string
+    FinanacialProductWebBrandCode:
+      type: object
+      properties:
+        code:
+          type: string
+        codeName:
+          type: string
+    InvestmentDetail:
+      type: object
+      properties:
+        autoSweepDesc:
+          type: string
+        minTransferAmount:
+          type: string
+        investmentPlans:
+          $ref: "#/components/schemas/InvestmentPlans"
+    InvestmentPlans:
+      type: object
+      properties:
+        primaryInvestmentPlanID:
+          type: string
+        secondaryInvestmentPlanID:
+          type: string
+        effectiveDate:
+          type: string
+    ProductOffer:
+      type: object
+      properties:
+        productCategoryDesc:
+          type: string
+        offerCode:
+          type: string
+        offerName:
+          type: string
+        investmentThresholdAmt:
+          type: BigDecimal
+        investmentAllowedDesc:
+          type: string
+        investmentFeeAmt:
+          type: string
+        bankProductNumber:
+          type: BigDecimal
