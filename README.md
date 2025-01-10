@@ -8,19 +8,28 @@ The EmployerDetails API service.
 
 ## Quickstart
 
-TODO
+This EmployerDetails Service is a Spring Boot application that provides RESTful APIs to fetch employer details based on
+the employer GroupId and Employer Group Name. And also provides APIs to update the employer details based on the request
+from EAP service.
 
 ### Local Setup
 
-TODO: Add details for updating IntelliJ settings like the VM options, recommended plugins
+Recommended Plugins:
+Spring Boot
+Lombok
+SonarLint
+CheckStyle-IDEA
+Maven
+Git Integration
+Github Copilot
 
 ### Running Tests
 
-TODO: Add any special configuration required for local testing, unit tests and/or running application locally
+Using Junit to write test cases for the service.And to run application locally using embedded tomcat server.
 
 ### Postman Collection
 
-TODO: Add notes on using the postman collection
+Using swagger to test the APIs using open API specification.
 
 ## Base Docker Image
 
