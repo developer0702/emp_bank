@@ -16,7 +16,7 @@ permissions:
         description: Release name of the service
         required: false
         type: string
-        default: ob-core-contribution-api
+        default: ob-core-employerDetails-api
       image-tag:
         description: Docker Image tag to pull and deploy
         required: true
@@ -38,61 +38,46 @@ jobs:
     environment: "${{inputs.target-env}}"
     runs-on: uhg-runner
     steps:
-# TODO: Determine why the vault credentials are not working from within the github runner, once that is resolved, this can be re-enabled
-#      - name: Import Secrets
-#        id: import-secrets
-#        uses: hashicorp/vault-action@v3.0.0
-#        with:
-#          url: ${{ vars.VAULT_URL }}
-#          namespace: OPTUM/APP/FTPS/${{ vars.VAULT_PATH }}
-#          method: approle
-#          roleId: "${{ secrets.VAULT_APPROLE_ROLEID }}"
-#          secretId: "${{ secrets.VAULT_APPROLE_SECRETID }}"
-#          tlsSkipVerify: true
-#          secrets: |
-#            ${{ vars.VAULT_PATH }}/obi/data/contributions-api KUBE_CONTEXT_${{ inputs.datacenter }} | KUBE_CONTEXT ;
-#            ${{ vars.VAULT_PATH }}/obi/data/contributions-api OB_CORE_SVC_PWD ;
-#            ${{ vars.VAULT_PATH }}/obi/data/contributions-api OB_CORE_SVC_USR ;
-    - name: checkout out repository code
-      uses: actions/checkout@v4
-    - name: Check target env
-      id: check-target-env
-      shell: bash
-      run: |
-        echo "target env is: ${{ inputs.target-env }}"
-        if [[ "${{ inputs.target-env }}" == "stage" ]] || [[ "${{ inputs.target-env }}" == "prod" ]]; then
-          echo "Dual region deploy required for ELR and CTC clusters."
-          echo "dual_region=true" >> $GITHUB_OUTPUT
-        else
-          echo "Single region deployment to ELR cluster."
-          echo "dual_region=false" >> $GITHUB_OUTPUT
-        fi
-    - name: Setup and Install Helm Charts for ELR
-      uses: ./.github/templates/helm-setup-and-install
-      with:
-        kube-context: "${{ secrets.KUBE_CONTEXT_ELR }}"
-        datacenter: elr
-        target-env: "${{ inputs.target-env }}"
-        k8s-namespace: "${{ vars.K8S_NAMESPACE }}"
-        release-name: "${{ inputs.release-name }}"
-        image-tag: "${{ inputs.image-tag }}"
-        chart-version: "${{ inputs.chart-version }}"
-        artifactory-url: "${{ env.HELM_LOCAL_REPO_URL }}"
-        registry-token: "${{ secrets.REGISTRY_TOKEN }}"
-        vault-role-id: "${{ secrets.VAULT_APPROLE_ROLEID }}"
-        vault-secret-id: "${{ secrets.VAULT_APPROLE_SECRETID }}"
-    - name: Setup and Install Helm Charts for CTC
-      if: steps.check-target-env.outputs.dual_region == 'true'
-      uses: ./.github/templates/helm-setup-and-install
-      with:
-        kube-context: "${{ secrets.KUBE_CONTEXT_CTC }}"
-        datacenter: ctc
-        target-env: "${{ inputs.target-env }}"
-        k8s-namespace: "${{ vars.K8S_NAMESPACE }}"
-        release-name: "${{ inputs.release-name }}"
-        image-tag: "${{ inputs.image-tag }}"
-        chart-version: "${{ inputs.chart-version }}"
-        artifactory-url: "${{ env.HELM_LOCAL_REPO_URL }}"
-        registry-token: "${{ secrets.REGISTRY_TOKEN }}"
-        vault-role-id: "${{ secrets.VAULT_APPROLE_ROLEID }}"
-        vault-secret-id: "${{ secrets.VAULT_APPROLE_SECRETID }}"
+      - name: checkout out repository code
+        uses: actions/checkout@v4
+      - name: Check target env
+        id: check-target-env
+        shell: bash
+        run: |
+          echo "target env is: ${{ inputs.target-env }}"
+          if [[ "${{ inputs.target-env }}" == "stage" ]] || [[ "${{ inputs.target-env }}" == "prod" ]]; then
+            echo "Dual region deploy required for ELR and CTC clusters."
+            echo "dual_region=true" >> $GITHUB_OUTPUT
+          else
+            echo "Single region deployment to ELR cluster."
+            echo "dual_region=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Setup and Install Helm Charts for ELR
+        uses: ./.github/templates/helm-setup-and-install
+        with:
+          kube-context: "${{ secrets.KUBE_CONTEXT_ELR }}"
+          datacenter: elr
+          target-env: "${{ inputs.target-env }}"
+          k8s-namespace: "${{ vars.K8S_NAMESPACE }}"
+          release-name: "${{ inputs.release-name }}"
+          image-tag: "${{ inputs.image-tag }}"
+          chart-version: "${{ inputs.chart-version }}"
+          artifactory-url: "${{ env.HELM_LOCAL_REPO_URL }}"
+          registry-token: "${{ secrets.REGISTRY_TOKEN }}"
+          vault-role-id: "${{ secrets.VAULT_APPROLE_ROLEID }}"
+          vault-secret-id: "${{ secrets.VAULT_APPROLE_SECRETID }}"
+      - name: Setup and Install Helm Charts for CTC
+        if: steps.check-target-env.outputs.dual_region == 'true'
+        uses: ./.github/templates/helm-setup-and-install
+        with:
+          kube-context: "${{ secrets.KUBE_CONTEXT_CTC }}"
+          datacenter: ctc
+          target-env: "${{ inputs.target-env }}"
+          k8s-namespace: "${{ vars.K8S_NAMESPACE }}"
+          release-name: "${{ inputs.release-name }}"
+          image-tag: "${{ inputs.image-tag }}"
+          chart-version: "${{ inputs.chart-version }}"
+          artifactory-url: "${{ env.HELM_LOCAL_REPO_URL }}"
+          registry-token: "${{ secrets.REGISTRY_TOKEN }}"
+          vault-role-id: "${{ secrets.VAULT_APPROLE_ROLEID }}"
+          vault-secret-id: "${{ secrets.VAULT_APPROLE_SECRETID }}"
