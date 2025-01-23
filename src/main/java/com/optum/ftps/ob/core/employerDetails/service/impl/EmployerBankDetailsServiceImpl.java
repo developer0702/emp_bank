@@ -1,25 +1,32 @@
 package com.optum.ftps.ob.core.employerDetails.service.impl;
 
-import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsRequest;
+import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailDTO;
+import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailsResponseDTO;
 import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsResponse;
+import com.optum.ftps.ob.core.employerDetails.repository.EmployerBankDetailsRepository;
 import com.optum.ftps.ob.core.employerDetails.service.EmployerBankDetailsService;
-import com.optum.ftps.ob.core.employerDetails.validator.EmployerDetailsValidator;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsService {
 
-    private EmployerDetailsValidator empBankDetailsValidator;
+    private final EmployerBankDetailsRepository employerBankDetailsRepository;
 
     @Override
     public UpdateEmpBankDetailsResponse updateEmployerBankDetails(
-            UpdateEmpBankDetailsRequest request) {
-        log.info("Method Start ********** updEmployerBankDetails()::", request);
-
-        return null;
+            EmployerBankDetailDTO employerBankDetailDTO) {
+        log.info("Method Start ********** updEmployerBankDetails()::", employerBankDetailDTO);
+        var employerBankDetailsResponseDTO = new EmployerBankDetailsResponseDTO();
+        var empBankDetailDTO =
+                employerBankDetailsRepository.updateEmployerBankDetails(employerBankDetailDTO);
+        employerBankDetailsResponseDTO.setEmployerBankDetail(empBankDetailDTO);
+        log.debug("Returning employer details: {}", employerBankDetailsResponseDTO);
+        return employerBankDetailsResponseDTO;
     }
 }
