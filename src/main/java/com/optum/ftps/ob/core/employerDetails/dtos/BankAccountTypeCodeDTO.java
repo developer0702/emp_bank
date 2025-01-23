@@ -5,7 +5,9 @@ import lombok.Data;
 @Data
 public class BankAccountTypeCodeDTO {
 
-  private String code;
+    private String code;
 
-  private String codeName;
+    private String codeName;
+
+    public BankAccountTypeCodeDTO(String code, String codeName) {}
 }

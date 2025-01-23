@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class StatusDTO {
-  private String statusCode;
-  private String severity;
-  private String statusDescription;
+    private String statusCode;
+    private String severity;
+    private String statusDescription;
 }

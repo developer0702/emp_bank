@@ -145,41 +145,34 @@ components:
       - requestUserId
       - sourceSystemId
       properties:
-        employerGroupId:
-          type: string
         employerBankDetail:
-          type: object
-          properties:
-            contributionBankAccounts:
-              type: array
-              items: null
-          $ref: "#/components/schemas/ContributionBankAccount"
+          $ref: "#/components/schemas/EmployerBankDetail"
         requestId:
           type: string
         requestUserId:
           type: string
         sourceSystemId:
           type: string
-    UpdateEmpBankDetailsResponse:
+    EmployerBankDetail:
       type: object
       properties:
         employerGroupId:
           type: string
+        contributionBankAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContributionBankAccount"
+    UpdateEmpBankDetailsResponse:
+      type: object
+      properties:
         employerBankDetail:
-          type: object
-          properties:
-            contributionBankAccounts:
-              type: array
-              items: null
-          $ref: "#/components/schemas/ContributionBankAccount"
+          $ref: "#/components/schemas/EmployerBankDetail"
         requestId:
           type: string
         requestUserId:
           type: string
         sourceSystemId:
           type: string
-        status:
-          $ref: "#/components/schemas/Status"
     ErrorResponse:
       type: object
       properties:
