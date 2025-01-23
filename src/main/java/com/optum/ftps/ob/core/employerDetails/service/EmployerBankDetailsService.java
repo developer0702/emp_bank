@@ -1,10 +1,10 @@
 package com.optum.ftps.ob.core.employerDetails.service;
 
 import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailDTO;
-import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsResponse;
+import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailsResponseDTO;
 
 public interface EmployerBankDetailsService {
 
-    UpdateEmpBankDetailsResponse updateEmployerBankDetails(
+    EmployerBankDetailsResponseDTO updateEmployerBankDetails(
             EmployerBankDetailDTO employerBankDetailDTO);
 }

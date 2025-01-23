@@ -2,7 +2,6 @@ package com.optum.ftps.ob.core.employerDetails.service.impl;
 
 import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailDTO;
 import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailsResponseDTO;
-import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsResponse;
 import com.optum.ftps.ob.core.employerDetails.repository.EmployerBankDetailsRepository;
 import com.optum.ftps.ob.core.employerDetails.service.EmployerBankDetailsService;
 
@@ -19,7 +18,7 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
     private final EmployerBankDetailsRepository employerBankDetailsRepository;
 
     @Override
-    public UpdateEmpBankDetailsResponse updateEmployerBankDetails(
+    public EmployerBankDetailsResponseDTO updateEmployerBankDetails(
             EmployerBankDetailDTO employerBankDetailDTO) {
         log.info("Method Start ********** updEmployerBankDetails()::", employerBankDetailDTO);
         var employerBankDetailsResponseDTO = new EmployerBankDetailsResponseDTO();
