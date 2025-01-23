@@ -8,6 +8,9 @@ public class BankAccountStatusDTO {
     private String code;
 
     private String codeName;
+<<<<<<< Updated upstream
 
     public BankAccountStatusDTO(String code, String codeName) {}
+=======
+>>>>>>> Stashed changes
 }

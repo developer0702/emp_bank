@@ -3,7 +3,8 @@ openapi: 3.0.3
 info:
   version: 1.0.0
   title: Employer Details API
-  description: OpenAPI specification for Get Employer Details APIs
+  description: OpenAPI specification for Get Employer Details And UpdateEmployerBank
+    Details APIs
   termsOfService: https://changeme.optum.com/
   contact:
     name: Optum Financial EUREKA Team

@@ -8,6 +8,9 @@ public class BankAccountIdentifierDTO {
     private String bankAccountNumber;
 
     private String bankRoutingNumber;
+<<<<<<< Updated upstream
 
     public BankAccountIdentifierDTO(String string, String string1) {}
+=======
+>>>>>>> Stashed changes
 }

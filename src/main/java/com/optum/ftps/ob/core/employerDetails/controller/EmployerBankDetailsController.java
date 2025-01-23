@@ -1,0 +1,44 @@
+
+package com.optum.ftps.ob.core.employerDetails.controller;
+
+import com.optum.ftps.ob.core.employerDetails.api.v1.EmployerBankDetailsApi;
+import com.optum.ftps.ob.core.employerDetails.mapper.EmployerBankDetailsMapper;
+import com.optum.ftps.ob.core.employerDetails.mapper.EmployerBankDetailsResponseMapper;
+import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsRequest;
+import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsResponse;
+import com.optum.ftps.ob.core.employerDetails.service.EmployerBankDetailsService;
+import com.optum.ftps.ob.core.employerDetails.validator.EmployerBankDetailsValidator;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@Slf4j
+public class EmployerBankDetailsController implements EmployerBankDetailsApi {
+
+ private final EmployerBankDetailsValidator employerBankDetailsValidator;
+ private final EmployerBankDetailsMapper employerBankDetailsMapper;
+ private final EmployerBankDetailsService employerBankDetailsService;
+ private final EmployerBankDetailsResponseMapper employerBankDetailsResponseMapper;
+
+ @Override
+ public ResponseEntity<UpdateEmpBankDetailsResponse> updateEmployerBankDetails(
+         @Valid @RequestBody UpdateEmpBankDetailsRequest request) {
+  log.debug("Received request to update employer bank details : {}", request);
+
+
+
+  var requestDTO = employerBankDetailsMapper.map(request);
+  var responseDTO = employerBankDetailsService.updateEmployerBankDetails(requestDTO);
+   var response = employerBankDetailsResponseMapper.map(responseDTO);
+
+  log.debug("Employer bank details updated : {}", responseDTO);
+  return ResponseEntity.ok(null);
+ }
+}
