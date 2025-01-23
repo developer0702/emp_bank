@@ -3,11 +3,9 @@ package com.optum.ftps.ob.core.employerDetails.dtos;
 import lombok.Data;
 
 @Data
-public class BankAccountStatusDTO {
+public class EmployerProductSetupFeeCodeDTO {
 
     private String code;
 
     private String codeName;
-
-    public BankAccountStatusDTO(String code, String codeName) {}
 }

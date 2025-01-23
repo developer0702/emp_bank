@@ -5,7 +5,9 @@ import lombok.Data;
 @Data
 public class BankAccountIdentifierDTO {
 
-  private String bankAccountNumber;
+    private String bankAccountNumber;
 
-  private String bankRoutingNumber;
+    private String bankRoutingNumber;
+
+    public BankAccountIdentifierDTO(String string, String string1) {}
 }

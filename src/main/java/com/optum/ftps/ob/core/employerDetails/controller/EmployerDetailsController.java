@@ -1,14 +1,11 @@
 package com.optum.ftps.ob.core.employerDetails.controller;
 
 import com.optum.ftps.ob.core.employerDetails.api.v1.EmployerDetailsApi;
-import com.optum.ftps.ob.core.employerDetails.model.v1.Address;
-import com.optum.ftps.ob.core.employerDetails.model.v1.AddressLines;
-import com.optum.ftps.ob.core.employerDetails.model.v1.AddressPostalCode;
-import com.optum.ftps.ob.core.employerDetails.model.v1.AddressState;
-import com.optum.ftps.ob.core.employerDetails.model.v1.AddressTypeCode;
-import com.optum.ftps.ob.core.employerDetails.model.v1.Employer;
+import com.optum.ftps.ob.core.employerDetails.mapper.EmployerDetailsResponseMapper;
 import com.optum.ftps.ob.core.employerDetails.model.v1.EmployerDetailsResponse;
-import com.optum.ftps.ob.core.employerDetails.model.v1.Status;
+import com.optum.ftps.ob.core.employerDetails.service.EmployerDetailsService;
+import com.optum.ftps.ob.core.employerDetails.util.StringUtil;
+import com.optum.ftps.ob.core.employerDetails.validator.EmployerDetailsValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,28 +13,29 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.NativeWebRequest;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class EmployerDetailsController implements EmployerDetailsApi {
-    @Override
-    public Optional<NativeWebRequest> getRequest() {
-        return EmployerDetailsApi.super.getRequest();
-    }
+    private final EmployerDetailsValidator employerDetailsValidator;
+    private final EmployerDetailsService employerDetailsService;
+    private final EmployerDetailsResponseMapper employerDetailsResponseMapper;
 
     @Override
-    public ResponseEntity<EmployerDetailsResponse> getEmployerDetails(String empGroupId) {
-        empGroupId = "1";
+    public ResponseEntity<EmployerDetailsResponse> getEmployerDetailsById(String empGroupId) {
+        empGroupId = StringUtil.sanitize(empGroupId);
+        log.debug("empId", empGroupId);
 
-        EmployerDetailsResponse response = new EmployerDetailsResponse();
+        var errors = employerDetailsValidator.validateEmployerDetailsById(empGroupId);
+        // if (!errors.isEmpty()) {
+        // log.debug("Validation failed for employer group id: {}", empGroupId);
+        // exceptionService.handleValidationError(errors);
+        // }
+        var employerDetailsResponseDTO = employerDetailsService.getEmployerDetailsById(empGroupId);
+        var response =
+                employerDetailsResponseMapper.employerDetailsResponse(employerDetailsResponseDTO);
+        /*EmployerDetailsResponse response = new EmployerDetailsResponse();
         Map<String, Object> responseDetails = new HashMap<>();
         response.setRequestId("1");
 
@@ -82,7 +80,7 @@ public class EmployerDetailsController implements EmployerDetailsApi {
 
         // Add other fields similarly...
         employerList.add(employer);
-        response.setEmployer(employerList);
+        response.setEmployer(employerList);*/
 
         return new ResponseEntity<EmployerDetailsResponse>(response, HttpStatus.OK);
     }

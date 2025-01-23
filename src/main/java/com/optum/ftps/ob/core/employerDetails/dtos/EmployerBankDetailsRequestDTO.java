@@ -4,8 +4,7 @@ import lombok.Data;
 
 @Data
 public class EmployerBankDetailsRequestDTO {
-    private ContributionBankAccountDTO contributionBankAccount;
-    private String employerGroupId;
+    private EmployerBankDetailDTO employerBankDetail;
     private String requestId;
     private String requestUserId;
     private String sourceSystemId;

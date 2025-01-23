@@ -1,7 +1,8 @@
 package com.optum.ftps.ob.core.employerDetails.util;
 
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
 
 public class StringUtil {
     private StringUtil() {

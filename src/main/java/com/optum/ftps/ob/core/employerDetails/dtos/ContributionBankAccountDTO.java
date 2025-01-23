@@ -4,11 +4,11 @@ import lombok.Data;
 
 @Data
 public class ContributionBankAccountDTO {
-  private BankAccountIdentifierDTO bankAccountIdentifierDTO;
-  private BankAccountTypeCodeDTO bankAccountTypeCodeDTO;
-  private String bankName;
-  private String bankSequenceNumber;
-  private String bankAccountNickName;
-  private BankAccountStatusDTO bankAccountStatusDTO;
-  private String bankAccountOperation;
+    private BankAccountIdentifierDTO bankAccountIdentifier;
+    private BankAccountTypeCodeDTO bankAccountTypeCode;
+    private String bankName;
+    private String bankSequenceNumber;
+    private String bankAccountNickName;
+    private BankAccountStatusDTO bankAccountStatus;
+    private String bankAccountOperation;
 }
