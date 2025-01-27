@@ -6,7 +6,8 @@ public class ErrorCodeConstants {
 
     public static final int INCORRECT_FORMAT = 2;
 
-    public static final int RECORD_NOT_FOUND_ERROR_CODE = 32;
-    public static final int REQUEST_SUCCESSFULLY_PROCESSED = 9;
-    public static final int SERVICE_FAILED_ERROR_CODE = 13;
+    public static final int RECORD_NOT_FOUND_ERROR_CODE = 3;
+    public static final int REQUEST_SUCCESSFULLY_PROCESSED = 4;
+    public static final int SERVICE_FAILED_ERROR_CODE = 5;
+    public static final int EXCEPTION_IN_FISERV = 6;
 }

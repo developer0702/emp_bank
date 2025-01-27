@@ -1,6 +1,5 @@
 package com.optum.ftps.ob.core.employerDetails.dtos;
 
-<<<<<<< Updated upstream
 import lombok.Data;
 
 @Data
@@ -13,13 +12,3 @@ public class ContributionBankAccountDTO {
     private BankAccountStatusDTO bankAccountStatus;
     private String bankAccountOperation;
 }
-=======
-public record ContributionBankAccountDTO(
-        BankAccountIdentifierDTO bankAccountIdentifierDTO,
-        BankAccountTypeCodeDTO bankAccountTypeCodeDTO,
-        String bankName,
-        String bankSequenceNumber,
-        String bankAccountNickName,
-        BankAccountStatusDTO bankAccountStatusDTO,
-        String bankAccountOperation) {}
->>>>>>> Stashed changes

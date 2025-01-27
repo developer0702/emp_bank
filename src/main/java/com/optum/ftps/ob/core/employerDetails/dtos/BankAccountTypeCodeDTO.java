@@ -1,16 +1,15 @@
 package com.optum.ftps.ob.core.employerDetails.dtos;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class BankAccountTypeCodeDTO {
 
     private String code;
 
     private String codeName;
-<<<<<<< Updated upstream
 
     public BankAccountTypeCodeDTO(String code, String codeName) {}
-=======
->>>>>>> Stashed changes
 }

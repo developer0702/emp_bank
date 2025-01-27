@@ -1,6 +1,5 @@
 package com.optum.ftps.ob.core.employerDetails.service.impl;
 
-import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailDTO;
 import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailsResponseDTO;
 import com.optum.ftps.ob.core.employerDetails.repository.EmployerBankDetailsRepository;
 import com.optum.ftps.ob.core.employerDetails.service.EmployerBankDetailsService;
@@ -19,13 +18,19 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
 
     @Override
     public EmployerBankDetailsResponseDTO updateEmployerBankDetails(
-            EmployerBankDetailDTO employerBankDetailDTO) {
+            EmployerBankDetailsResponseDTO employerBankDetailDTO) {
         log.info("Method Start ********** updEmployerBankDetails()::", employerBankDetailDTO);
         var employerBankDetailsResponseDTO = new EmployerBankDetailsResponseDTO();
         var empBankDetailDTO =
-                employerBankDetailsRepository.updateEmployerBankDetails(employerBankDetailDTO);
-        employerBankDetailsResponseDTO.setEmployerBankDetail(empBankDetailDTO);
-        log.debug("Returning employer details: {}", employerBankDetailsResponseDTO);
+                employerBankDetailsRepository.updateEmployerBankDetails(
+                        employerBankDetailDTO.getEmployerBankDetail());
+        log.info("Method End ********** updEmployerBankDetails()::", empBankDetailDTO);
+//                        employerBankDetailDTO.setEmployerBankDetail(empBankDetailDTO);
+         employerBankDetailsResponseDTO.setEmployerBankDetail(empBankDetailDTO);
+         employerBankDetailsResponseDTO.setRequestUserId(employerBankDetailDTO.getRequestUserId());
+         employerBankDetailsResponseDTO.setRequestId(employerBankDetailDTO.getRequestId());
+         employerBankDetailsResponseDTO.setSourceSystemId(employerBankDetailDTO.getSourceSystemId());
+         log.debug("Returning employer details: {}", employerBankDetailsResponseDTO);
         return employerBankDetailsResponseDTO;
     }
 }

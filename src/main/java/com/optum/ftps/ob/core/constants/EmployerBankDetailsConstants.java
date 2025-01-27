@@ -1,14 +1,8 @@
 package com.optum.ftps.ob.core.constants;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EmployerDetailsConstants {
-
+public class EmployerBankDetailsConstants {
     public static final int EMPLOYER_GROUPNUMBER_LENGTH = 9;
     public static final int EMPLOYER_GROUPNAME_LENGTH = 40;
-
     public static final int BNK_REQUESTID_LENGTH = 36;
     public static final int BNK_REQ_USERID_LENGTH = 30;
     public static final int BNK_SRC_SYS_ID_LENGTH = 10;
@@ -25,4 +19,5 @@ public class EmployerDetailsConstants {
     public static final String BNK_ACCNT_OPERATION_CD = "Invalid operation code";
     public static final String CUST_FUND_ID_ERROR = "Customer fund ID error";
     public static final int MAX_CONTRIBUTION_ACCOUNT_ALLOWED = 20;
+    public static final String EMPLOYER_BANK_DET_VALIDATOR = "empBankDetailsValidator";
 }

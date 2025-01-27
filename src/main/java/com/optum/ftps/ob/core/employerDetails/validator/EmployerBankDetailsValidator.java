@@ -1,166 +1,188 @@
- package com.optum.ftps.ob.core.employerDetails.validator;
+package com.optum.ftps.ob.core.employerDetails.validator;
 
- import com.optum.ftps.ob.core.constants.EmployerDetailsConstants;
- import com.optum.ftps.ob.core.constants.ErrorCodeConstants;
- import com.optum.ftps.ob.core.employerDetails.exceptions.ValidationException;
- import com.optum.ftps.ob.core.employerDetails.model.v1.ContributionBankAccount;
- import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsRequest;
- import com.optum.ftps.ob.core.employerDetails.util.HSAStringUtil;
+import com.optum.ftps.ob.core.constants.EmployerDetailsConstants;
+import com.optum.ftps.ob.core.constants.ErrorCodeConstants;
+import com.optum.ftps.ob.core.employerDetails.exceptions.ValidationException;
+import com.optum.ftps.ob.core.employerDetails.model.v1.BankAccountStatus;
+import com.optum.ftps.ob.core.employerDetails.model.v1.BankAccountTypeCode;
+import com.optum.ftps.ob.core.employerDetails.model.v1.ContributionBankAccount;
+import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsRequest;
+import com.optum.ftps.ob.core.employerDetails.util.StringUtil;
 
- import lombok.RequiredArgsConstructor;
- import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
- import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Component;
 
- @Slf4j
- @Component
- @RequiredArgsConstructor
- public class EmployerBankDetailsValidator {
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
-    /** Variable to hold context for validate method */
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class EmployerBankDetailsValidator {
+
     private static final String CONTEXT_VALIDATE = "validate()";
 
-    /**
-     * This method is used to validate the fields while getting the account
-     * information
-     *
-     * @param argRequestDetail Object
-     * @throws ValidationException Validation Exception
-     */
-    public void validate(Object argRequestDetail) throws ValidationException {
-        UpdateEmpBankDetailsRequest updEmpBankDetailsRequest =
-                (UpdateEmpBankDetailsRequest) argRequestDetail;
-        boolean isReqFieldsPresent = checkRequiredFieldsPresent(updEmpBankDetailsRequest);
-        if (isReqFieldsPresent) {
-            boolean validateFieldFormat = checkFieldsFormat(updEmpBankDetailsRequest);
-            if (!validateFieldFormat) {
-                log.error("{} - Inside validation Exception for invalid format",
- CONTEXT_VALIDATE);
-                throw new ValidationException(ErrorCodeConstants.INCORRECT_FORMAT);
-            }
-        } else {
+    public Set<Integer> validateEmployerBankDetails(UpdateEmpBankDetailsRequest request)
+            throws ValidationException {
+        sanitizeRequest(request);
+        Set<Integer> errors = new TreeSet<>();
+
+        if (!checkRequiredFieldsPresent(request)) {
             log.error(
                     "{} - Inside validation Exception as required fields not present",
                     CONTEXT_VALIDATE);
-            throw new ValidationException(ErrorCodeConstants.REQUIRED_FIELDS_MISSING);
+            errors.add(ErrorCodeConstants.REQUIRED_FIELDS_MISSING);
         }
+        if (!checkFieldsFormat(request)) {
+            log.error("{} - Inside validation Exception for invalid format", CONTEXT_VALIDATE);
+            errors.add(ErrorCodeConstants.INCORRECT_FORMAT);
+        }
+
+        return errors;
     }
 
-    private boolean checkFieldsFormat(UpdateEmpBankDetailsRequest argUpdEmpBankDetailsRequest)
-            throws ValidationException {
-        boolean flag = true;
-        ContributionBankAccount[] contributionAccounts =
-                argUpdEmpBankDetailsRequest.getEmployerBankDetail().getContributionBankAccounts();
+    private boolean checkRequiredFieldsPresent(UpdateEmpBankDetailsRequest request) {
+        return !StringUtil.isEmpty(request.getRequestUserId())
+                && !StringUtil.isEmpty(request.getSourceSystemId())
+                && !StringUtil.isEmpty(request.getRequestId())
+                && request.getEmployerBankDetail() != null
+                && !StringUtil.isEmpty(request.getEmployerBankDetail().getEmployerGroupId())
+                && checkRequiredContributionFieldsPresent(request);
+    }
 
-        if (argUpdEmpBankDetailsRequest.getRequestId() != null) {
-            if (!(argUpdEmpBankDetailsRequest.getRequestId().trim().length()
-                    <= EmployerDetailsConstants.BNK_REQUESTID_LENGTH)) {
-                log.error(
-                        "Length of RequestId should be less than or equal to 36**** {}",
-                        argUpdEmpBankDetailsRequest.getRequestId());
-                flag = false;
+    private boolean checkRequiredContributionFieldsPresent(UpdateEmpBankDetailsRequest request) {
+        boolean reqFieldPrst = false;
+        List<ContributionBankAccount> contributionAccounts =
+                request.getEmployerBankDetail().getContributionBankAccounts();
+        for (ContributionBankAccount contributionBankAccount : contributionAccounts) {
+            if (contributionBankAccount.getBankAccountIdentifier() != null
+                    && contributionBankAccount.getBankAccountIdentifier().getBankAccountNumber()
+                            != null
+                    && contributionBankAccount.getBankAccountIdentifier().getBankRoutingNumber()
+                            != null
+                    && contributionBankAccount.getBankAccountTypeCode() != null
+                    && contributionBankAccount.getBankAccountTypeCode().getCode() != null) {
+
+                reqFieldPrst = true;
+                break;
             }
         }
+        return reqFieldPrst;
+    }
 
-        if (!(argUpdEmpBankDetailsRequest.getRequestUserId().trim().length()
-                <= EmployerDetailsConstants.BNK_REQ_USERID_LENGTH)) {
+    private boolean checkFieldsFormat(UpdateEmpBankDetailsRequest request)
+            throws ValidationException {
+        boolean flag = true;
+        List<ContributionBankAccount> contributionAccounts =
+                request.getEmployerBankDetail().getContributionBankAccounts();
+
+        if (request.getRequestId() != null
+                && request.getRequestId().trim().length()
+                        > EmployerDetailsConstants.BNK_REQUESTID_LENGTH) {
+            log.error(
+                    "Length of RequestId should be less than or equal to 36**** {}",
+                    request.getRequestId());
+            flag = false;
+        }
+
+        if (request.getRequestUserId().trim().length()
+                > EmployerDetailsConstants.BNK_REQ_USERID_LENGTH) {
             log.error(
                     "Length of RequestUserId should be less than or equal to 30**** {}",
-                    argUpdEmpBankDetailsRequest.getRequestUserId());
+                    request.getRequestUserId());
             flag = false;
         }
-        if (!(argUpdEmpBankDetailsRequest.getSourceSystemId().trim().length()
-                <= EmployerDetailsConstants.BNK_SRC_SYS_ID_LENGTH)) {
+
+        if (request.getSourceSystemId().trim().length()
+                > EmployerDetailsConstants.BNK_SRC_SYS_ID_LENGTH) {
             log.error(
                     "Length of SourceSystemId should be less than or equal to 10**** {}",
-                    argUpdEmpBankDetailsRequest.getSourceSystemId());
+                    request.getSourceSystemId());
             flag = false;
         }
-        if (!(argUpdEmpBankDetailsRequest
-                                .getEmployerBankDetail()
-                                .getEmployerGroupId()
-                                .trim()
-                                .length()
-                        <= EmployerDetailsConstants.EMP_GROUP_ID_LENGTH)
-                || !(HSAStringUtil.isAlphanumeric(
-                        argUpdEmpBankDetailsRequest
-                                .getEmployerBankDetail()
-                                .getEmployerGroupId()))) {
+
+        if (request.getEmployerBankDetail().getEmployerGroupId().trim().length()
+                        > EmployerDetailsConstants.EMP_GROUP_ID_LENGTH
+                || !StringUtil.isAlphanumeric(
+                        request.getEmployerBankDetail().getEmployerGroupId())) {
             log.error(
                     "Length of EmployerGroupId should be less than or equal to 9**** {}",
-                    argUpdEmpBankDetailsRequest.getEmployerBankDetail().getEmployerGroupId());
+                    request.getEmployerBankDetail().getEmployerGroupId());
             flag = false;
         }
-        for (ContributionBankAccount contributionBankAccount : contributionAccounts) {
 
-            if (!(contributionBankAccount
+        for (ContributionBankAccount contributionBankAccount : contributionAccounts) {
+            if (contributionBankAccount
                                     .getBankAccountIdentifier()
                                     .getBankRoutingNumber()
                                     .trim()
                                     .length()
-                            == EmployerDetailsConstants.BNK_RTR_NO_LENGTH)
-                    || !(HSAStringUtil.isNumeric(
+                            != EmployerDetailsConstants.BNK_RTR_NO_LENGTH
+                    || !StringUtil.isNumeric(
                             contributionBankAccount
                                     .getBankAccountIdentifier()
-                                    .getBankRoutingNumber()))) {
+                                    .getBankRoutingNumber())) {
                 log.error(
                         "Length of BankRoutingNumber should be equal to 9***** {}",
-
- contributionBankAccount.getBankAccountIdentifier().getBankRoutingNumber());
+                        contributionBankAccount.getBankAccountIdentifier().getBankRoutingNumber());
                 flag = false;
             }
-            if (!(contributionBankAccount
+
+            if (contributionBankAccount
                                     .getBankAccountIdentifier()
                                     .getBankAccountNumber()
                                     .trim()
                                     .length()
-                            <= EmployerDetailsConstants.BNK_ACCT_NO_LENGTH)
-                    || !(HSAStringUtil.isNumeric(
+                            > EmployerDetailsConstants.BNK_ACCT_NO_LENGTH
+                    || !StringUtil.isNumeric(
                             contributionBankAccount
                                     .getBankAccountIdentifier()
-                                    .getBankAccountNumber()))) {
+                                    .getBankAccountNumber())) {
                 log.error(
-                        "Length of BankAccountNumber should be less than or equal to 17 *******
- {}",
-
- contributionBankAccount.getBankAccountIdentifier().getBankAccountNumber());
+                        "Length of BankAccountNumber should be less than or equal to 17 ******* {}",
+                        contributionBankAccount.getBankAccountIdentifier().getBankAccountNumber());
                 flag = false;
             }
-            if (!HSAStringUtil.isEmpty(contributionBankAccount.getBankName())) {
-                if (!(contributionBankAccount.getBankName().trim().length()
-                        <= EmployerDetailsConstants.BNK_NAME_LENGTH)) {
-                    log.error(
-                            "Length of BankName should be less than equal to 40 {}",
-                            contributionBankAccount.getBankName());
-                    flag = false;
-                }
+
+            if (!StringUtil.isEmpty(contributionBankAccount.getBankName())
+                    && contributionBankAccount.getBankName().trim().length()
+                            > EmployerDetailsConstants.BNK_NAME_LENGTH) {
+                log.error(
+                        "Length of BankName should be less than equal to 40 {}",
+                        contributionBankAccount.getBankName());
+                flag = false;
             }
-            if (!(contributionBankAccount
+
+            if (!contributionBankAccount
                             .getBankAccountTypeCode()
                             .getCode()
                             .trim()
-                            .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_TYPE_CD_S))
-                    && !(contributionBankAccount
+                            .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_TYPE_CD_S)
+                    && !contributionBankAccount
                             .getBankAccountTypeCode()
                             .getCode()
                             .trim()
-                            .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_TYPE_CD_C))) {
+                            .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_TYPE_CD_C)) {
                 log.error(
                         "BankAccountTypeCode should only be of 1 char Length[S (Savings) or C"
                                 + " (Checking)] {}",
                         contributionBankAccount.getBankAccountTypeCode().getCode());
                 flag = false;
             }
-            if (!(contributionBankAccount
+
+            if (!contributionBankAccount
                             .getBankAccountStatus()
                             .getCode()
                             .trim()
-                            .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_STS_CD_A))
-                    && !(contributionBankAccount
+                            .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_STS_CD_A)
+                    && !contributionBankAccount
                             .getBankAccountStatus()
                             .getCode()
                             .trim()
-                            .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_STS_CD_I))) {
+                            .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_STS_CD_I)) {
                 log.error(
                         "BankAccountStsCode should only be of 1 char Length[A (Active) or I"
                                 + " (Inactive)] {}",
@@ -168,74 +190,73 @@
                 flag = false;
             }
 
-            if (!(contributionBankAccount
+            if (!contributionBankAccount
                             .getBankAccountOperation()
                             .trim()
-                            .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_OPERATION_CD_ADD))
-                    && !(contributionBankAccount
+                            .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_OPERATION_CD_ADD)
+                    && !contributionBankAccount
                             .getBankAccountOperation()
                             .trim()
                             .equalsIgnoreCase(
-                                    EmployerDetailsConstants.BNK_ACCT_OPERATION_CD_UPDATE))) {
+                                    EmployerDetailsConstants.BNK_ACCT_OPERATION_CD_UPDATE)) {
                 throw new ValidationException(EmployerDetailsConstants.BNK_ACCNT_OPERATION_CD);
             }
 
             if (contributionBankAccount
-                    .getBankAccountOperation()
-                    .trim()
-                    .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_OPERATION_CD_ADD)) {
-                if (contributionBankAccount.getBankSequenceNumber() != null
-                        && contributionBankAccount.getBankSequenceNumber().trim().length() > 0) {
-                    throw new ValidationException(EmployerDetailsConstants.CUST_FUND_ID_ERROR);
-                }
+                            .getBankAccountOperation()
+                            .trim()
+                            .equalsIgnoreCase(EmployerDetailsConstants.BNK_ACCT_OPERATION_CD_ADD)
+                    && contributionBankAccount.getBankSequenceNumber() != null
+                    && !contributionBankAccount.getBankSequenceNumber().trim().isEmpty()) {
+                throw new ValidationException(EmployerDetailsConstants.CUST_FUND_ID_ERROR);
             }
         }
-        if (contributionAccounts.length == 0 || contributionAccounts.length > 20) {
+
+        if (contributionAccounts.isEmpty() || contributionAccounts.size() > 20) {
             throw new ValidationException(
-                    EmployerDetailsConstants.MAX_CONTRIBUTION_ACCOUNT_ALLOWED);
+                    String.valueOf(EmployerDetailsConstants.MAX_CONTRIBUTION_ACCOUNT_ALLOWED));
         }
+
         return flag;
     }
 
-    /**
-     * This method is used check whether the input fields are present
-     * @param argUpdEmpBankDetailsRequest UpdateEmpBankDetailsRequest
-     * @return boolean reqFieldPrst
-     */
-    private boolean checkRequiredFieldsPresent(
-            UpdateEmpBankDetailsRequest argUpdEmpBankDetailsRequest) {
-        boolean reqFieldPrst =
-                (!HSAStringUtil.isEmpty(argUpdEmpBankDetailsRequest.getRequestUserId()))
-                        &&
- (!HSAStringUtil.isEmpty(argUpdEmpBankDetailsRequest.getSourceSystemId()))
-                        && (argUpdEmpBankDetailsRequest.getEmployerBankDetail() != null)
-                        && (!HSAStringUtil.isEmpty(
-                                argUpdEmpBankDetailsRequest
-                                        .getEmployerBankDetail()
-                                        .getEmployerGroupId()))
-                        && checkRequiredContributionFieldsPresent(argUpdEmpBankDetailsRequest);
-        return reqFieldPrst;
-    }
-
-    private boolean checkRequiredContributionFieldsPresent(
-            UpdateEmpBankDetailsRequest argUpdEmpBankDetailsRequest) {
-        boolean reqFieldPrst = false;
-
-        ContributionBankAccount[] contributionAccounts =
-                argUpdEmpBankDetailsRequest.getEmployerBankDetail().getContributionBankAccounts();
-        for (ContributionBankAccount contributionBankAccount : contributionAccounts) {
-
-            if ((contributionBankAccount.getBankAccountIdentifier() != null)
-                    && (contributionBankAccount.getBankAccountIdentifier().getBankAccountNumber()
-                            != null)
-                    && (contributionBankAccount.getBankAccountIdentifier().getBankRoutingNumber()
-                            != null)
-                    && (contributionBankAccount.getBankAccountTypeCode() != null)
-                    && (contributionBankAccount.getBankAccountTypeCode().getCode() != null)) {
-                reqFieldPrst = true;
-                break;
-            }
+    private void sanitizeRequest(UpdateEmpBankDetailsRequest request) {
+        request.setRequestId(StringUtil.sanitize(request.getRequestId()));
+        request.setRequestUserId(StringUtil.sanitize(request.getRequestUserId()));
+        request.setSourceSystemId(StringUtil.sanitize(request.getSourceSystemId()));
+        request.getEmployerBankDetail()
+                .setEmployerGroupId(
+                        StringUtil.sanitize(request.getEmployerBankDetail().getEmployerGroupId()));
+        for (ContributionBankAccount contributionBankAccount :
+                request.getEmployerBankDetail().getContributionBankAccounts()) {
+            contributionBankAccount
+                    .getBankAccountIdentifier()
+                    .setBankAccountNumber(
+                            StringUtil.sanitize(
+                                    contributionBankAccount
+                                            .getBankAccountIdentifier()
+                                            .getBankAccountNumber()));
+            contributionBankAccount
+                    .getBankAccountIdentifier()
+                    .setBankRoutingNumber(
+                            StringUtil.sanitize(
+                                    contributionBankAccount
+                                            .getBankAccountIdentifier()
+                                            .getBankRoutingNumber()));
+            contributionBankAccount.setBankName(
+                    StringUtil.sanitize(contributionBankAccount.getBankName()));
+            contributionBankAccount.setBankAccountTypeCode(
+                    new BankAccountTypeCode(
+                            StringUtil.sanitize(
+                                    contributionBankAccount.getBankAccountTypeCode().getCode()),
+                            contributionBankAccount.getBankAccountTypeCode().getCodeName()));
+            contributionBankAccount.setBankAccountStatus(
+                    new BankAccountStatus(
+                            StringUtil.sanitize(
+                                    contributionBankAccount.getBankAccountStatus().getCode()),
+                            contributionBankAccount.getBankAccountStatus().getCodeName()));
+            contributionBankAccount.setBankAccountOperation(
+                    StringUtil.sanitize(contributionBankAccount.getBankAccountOperation()));
         }
-        return reqFieldPrst;
     }
- }
+}
