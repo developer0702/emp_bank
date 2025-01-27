@@ -5,5 +5,5 @@ import com.optum.ftps.ob.core.employerDetails.dtos.EmployerDTO;
 import java.util.List;
 
 public interface EmployerDetailsRepository {
-    List<EmployerDTO> getEmployerDetails(String empGrpId);
+    List<EmployerDTO> getEmployerDetails(String searchField, boolean isEmpGroupId);
 }

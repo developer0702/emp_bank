@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EmployerDetailsConstants {
 
+
     public static final int EMPLOYER_GROUPNUMBER_LENGTH = 9;
     public static final int EMPLOYER_GROUPNAME_LENGTH = 40;
 
@@ -25,4 +26,5 @@ public class EmployerDetailsConstants {
     public static final String BNK_ACCNT_OPERATION_CD = "Invalid operation code";
     public static final String CUST_FUND_ID_ERROR = "Customer fund ID error";
     public static final int MAX_CONTRIBUTION_ACCOUNT_ALLOWED = 20;
+
 }

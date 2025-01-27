@@ -20,7 +20,7 @@ public class EmployerDetailsRepositoryImpl implements EmployerDetailsRepository 
     private final EmployerDetailsDbToDTOMapper employerDetailsDbToDTOMapper;
 
     @Override
-    public List<EmployerDTO> getEmployerDetails(String empGrpId) {
+    public List<EmployerDTO> getEmployerDetails(String searchField, boolean isEmpGroupId) {
         List<Object[]> dbData = new ArrayList<>();
         dbData.add(
                 new Object[] {
