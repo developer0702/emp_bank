@@ -1,12 +1,30 @@
 package com.optum.ftps.ob.core.employerDetails.exceptions;
 
-import com.optum.ftps.ob.core.employerDetails.exceptions.model.ErrorItem;
-
 import java.util.List;
 
-public class ValidationException extends EmployerDetailsException {
+public class ValidationException extends Exception {
+    private final List<Integer> errorCodes;
 
-    public ValidationException(List<ErrorItem> errors) {
-        super(errors);
+    public ValidationException() {
+        this.errorCodes = null;
+    }
+
+    public ValidationException(String message) {
+        super(message);
+        this.errorCodes = null;
+    }
+
+    public ValidationException(String message, List<Integer> errorCodes) {
+        super(message);
+        this.errorCodes = errorCodes;
+    }
+
+    public ValidationException(List<Integer> errorCodes) {
+        super("Validation error occurred");
+        this.errorCodes = errorCodes;
+    }
+
+    public List<Integer> getErrorCodes() {
+        return errorCodes;
     }
 }

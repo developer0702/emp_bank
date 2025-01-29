@@ -3,16 +3,17 @@ openapi: 3.0.3
 info:
   version: 1.0.0
   title: Employer Details API
-  description: OpenAPI specification for Get Employer Details APIs
+  description: OpenAPI specification for Get Employer Details And UpdateEmployerBank
+    Details APIs
   termsOfService: https://changeme.optum.com/
   contact:
     name: Optum Financial EUREKA Team
     email: Team_EUREKA@ds.uhc.com
     url: https://www.optum.com/
 paths:
-  /getEmployerDetails:
+  /getEmployerDetailsById:
     get:
-      operationId: getEmployerDetails
+      operationId: getEmployerDetailsById
       summary: Retrieve employer details based on employer group Id
       tags:
       - EmployerDetails
@@ -20,11 +21,42 @@ paths:
       - $ref: "#/components/parameters/QueryEmployerGroupId"
       responses:
         "200":
-          description: Employer Details By Id response
+          description: Employer  Details By Employer Group Id
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/EmployerDetailsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponse"
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+        "503":
+          $ref: "#/components/responses/UnexpectedErrorResponse"
+  /getEmployerDetailsByName:
+    get:
+      operationId: getEmployerDetailsByName
+      summary: Retrieve employer details based on employer group name
+      tags:
+      - EmployerDetails
+      parameters:
+      - $ref: "#/components/parameters/QueryEmployerGroupName"
+      responses:
+        "200":
+          description: Employer  Details By Employer Group Name
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployerDetailsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponse"
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+        "503":
+          $ref: "#/components/responses/UnexpectedErrorResponse"
   /updEmployerBankDetails:
     put:
       operationId: updEmployerBankDetails
@@ -98,6 +130,13 @@ components:
       schema:
         type: string
         description: Employer Group Id to get employer Details
+    QueryEmployerGroupName:
+      in: query
+      name: empGroupName
+      required: true
+      schema:
+        type: string
+        description: Employer Group Name to get employer Details
   schemas:
     UpdateEmpBankDetailsRequest:
       type: object
@@ -107,41 +146,34 @@ components:
       - requestUserId
       - sourceSystemId
       properties:
-        employerGroupId:
-          type: string
         employerBankDetail:
-          type: object
-          properties:
-            contributionBankAccounts:
-              type: array
-              items: null
-          $ref: "#/components/schemas/ContributionBankAccount"
+          $ref: "#/components/schemas/EmployerBankDetail"
         requestId:
           type: string
         requestUserId:
           type: string
         sourceSystemId:
           type: string
-    UpdateEmpBankDetailsResponse:
+    EmployerBankDetail:
       type: object
       properties:
         employerGroupId:
           type: string
+        contributionBankAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContributionBankAccount"
+    UpdateEmpBankDetailsResponse:
+      type: object
+      properties:
         employerBankDetail:
-          type: object
-          properties:
-            contributionBankAccounts:
-              type: array
-              items: null
-          $ref: "#/components/schemas/ContributionBankAccount"
+          $ref: "#/components/schemas/EmployerBankDetail"
         requestId:
           type: string
         requestUserId:
           type: string
         sourceSystemId:
           type: string
-        status:
-          $ref: "#/components/schemas/Status"
     ErrorResponse:
       type: object
       properties:
