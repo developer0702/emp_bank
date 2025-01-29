@@ -52,7 +52,7 @@ public class StringUtil {
     }
 
     public static String remove(String argStr, String argRemovableChars) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int length = argStr.length();
         for (int i = 0; i < length; i++) {
             char c = argStr.charAt(i);
@@ -75,16 +75,16 @@ public class StringUtil {
 
     public static boolean isNumeric(String argStr) {
         if (argStr == null) {
-            return true;
+            return false;
         }
         int length = argStr.length();
         for (int i = 0; i < length; i++) {
             char c = argStr.charAt(i);
             if (!Character.isDigit(c)) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public static boolean checkLength(String argStr, int argMin, int argMax) {
@@ -105,7 +105,7 @@ public class StringUtil {
         if (argSource == null) {
             return null;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int length = argSource.length();
         for (int sourceIndex = 0; sourceIndex < length; ) {
             int badIndex = startsWith(argSource, argBad, sourceIndex);
@@ -125,7 +125,7 @@ public class StringUtil {
     }
 
     public static boolean contains(String argSource, String argIndex) {
-        return argSource.indexOf(argIndex) != -1;
+        return argSource.contains(argIndex);
     }
 
     public static String trimSpaces(String inValue) {
@@ -161,7 +161,7 @@ public class StringUtil {
         if (index != -1 && argStr.length() > index + 1) {
             decValue = argStr.substring(index + 1);
         }
-        return periodCnt <= 1 && (decValue.length() != 0 || index == -1) && decValue.length() <= 2;
+        return periodCnt <= 1 && (!decValue.isEmpty() || index == -1) && decValue.length() <= 2;
     }
 
     public static String removeSpecialChar(String inString) {
@@ -173,7 +173,7 @@ public class StringUtil {
         int ZERO = '0';
         int NINE = '9';
         char[] charArray = inString.toCharArray();
-        StringBuffer returnString = new StringBuffer(inString.length());
+        StringBuilder returnString = new StringBuilder(inString.length());
         int size = charArray.length;
         for (int i = 0; i < size; i++) {
             char character = charArray[i];
@@ -188,12 +188,13 @@ public class StringUtil {
     }
 
     public static String splitBySpecialChars(String string) {
-        if (string != null && string.length() > 0) {
+        if (string != null && !string.isEmpty()) {
             String[] tokens = string.split("[^a-zA-Z0-9]");
-            if (tokens != null && tokens.length > 0) {
+            if (tokens.length > 0) {
                 return tokens[0].toUpperCase();
             }
         }
+
         return string.toUpperCase();
     }
 

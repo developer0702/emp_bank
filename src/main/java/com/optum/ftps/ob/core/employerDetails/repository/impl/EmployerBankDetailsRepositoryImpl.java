@@ -51,18 +51,8 @@ public class EmployerBankDetailsRepositoryImpl implements EmployerBankDetailsRep
         dummyResponse.setContributionBankAccounts(List.of(contributionBankAccount));
         dummyResponse.setEmployerGroupId("DummyGroupId");
         log.info("Employer bank details updated: {}", dummyResponse);
-        // Simulate database update and return the updated details
-        // Assuming dbData is retrieved from the database
-//            List<Object[]> dbData = retrieveDbData(employerBankDetailDTO.getEmployerGroupId());
-//           log.info("dbData: {}", dbData);
-//            var result = employerBankDetailsMapper.mapToEmployerBankDetailsResponseDTO(dbData);
-        return dummyResponse;
+          return dummyResponse;
     }
 
-    private List<Object[]> retrieveDbData(String employerGroupId) {
-        // Placeholder for database retrieval logic
-        // Simulate retrieval of existing details
-        //        return List.of(new Object[] {"DummyData"});
-        return null;
-    }
+
 }

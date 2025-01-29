@@ -25,7 +25,7 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
                 employerBankDetailsRepository.updateEmployerBankDetails(
                         employerBankDetailDTO.getEmployerBankDetail());
         log.info("Method End ********** updEmployerBankDetails()::", empBankDetailDTO);
-//                        employerBankDetailDTO.setEmployerBankDetail(empBankDetailDTO);
+                        employerBankDetailDTO.setEmployerBankDetail(empBankDetailDTO);
          employerBankDetailsResponseDTO.setEmployerBankDetail(empBankDetailDTO);
          employerBankDetailsResponseDTO.setRequestUserId(employerBankDetailDTO.getRequestUserId());
          employerBankDetailsResponseDTO.setRequestId(employerBankDetailDTO.getRequestId());
