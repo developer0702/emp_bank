@@ -1,4 +1,4 @@
-package com.optum.ftps.ob.core.constants;
+package com.optum.ftps.ob.core.employerDetails.constants;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

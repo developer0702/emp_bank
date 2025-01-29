@@ -93,7 +93,6 @@ public class EmployerBankDetailsValidator {
 
     private boolean checkRequestFieldsFormat(UpdateEmpBankDetailsRequest request) {
         boolean flag = true;
-
         if (request.getRequestId() != null
                 && request.getRequestId().trim().length()
                         > EmployerDetailsConstants.BNK_REQUESTID_LENGTH) {

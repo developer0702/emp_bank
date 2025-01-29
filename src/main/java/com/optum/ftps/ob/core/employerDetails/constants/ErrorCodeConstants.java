@@ -1,4 +1,4 @@
-package com.optum.ftps.ob.core.constants;
+package com.optum.ftps.ob.core.employerDetails.constants;
 
 public class ErrorCodeConstants {
 
