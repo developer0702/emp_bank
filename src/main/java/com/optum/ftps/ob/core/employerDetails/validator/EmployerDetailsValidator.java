@@ -1,7 +1,7 @@
 package com.optum.ftps.ob.core.employerDetails.validator;
 
-import com.optum.ftps.ob.core.constants.EmployerDetailsConstants;
-import com.optum.ftps.ob.core.constants.ErrorCodeConstants;
+import com.optum.ftps.ob.core.employerDetails.constants.EmployerDetailsConstants;
+import com.optum.ftps.ob.core.employerDetails.constants.ErrorCodeConstants;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,7 @@
 package com.optum.ftps.ob.core.employerDetails.validator;
 
-import com.optum.ftps.ob.core.constants.EmployerDetailsConstants;
-import com.optum.ftps.ob.core.constants.ErrorCodeConstants;
+import com.optum.ftps.ob.core.employerDetails.constants.EmployerDetailsConstants;
+import com.optum.ftps.ob.core.employerDetails.constants.ErrorCodeConstants;
 import com.optum.ftps.ob.core.employerDetails.exceptions.ValidationException;
 import com.optum.ftps.ob.core.employerDetails.model.v1.BankAccountStatus;
 import com.optum.ftps.ob.core.employerDetails.model.v1.BankAccountTypeCode;
