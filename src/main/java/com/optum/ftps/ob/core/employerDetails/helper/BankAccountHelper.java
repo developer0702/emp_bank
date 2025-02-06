@@ -32,11 +32,10 @@ public class BankAccountHelper {
     public EmployeeIdSearchResponseDTO getAggregatorServiceResponse(EmployerIdSearchDTO employerIdSearchDTO ){
 
         String url = aggregateBaseUrl + EMPLOYER_ID_SEARCH;
-        var response =
-                restTemplate.postForObject(
-                        url, employerIdSearchDTO, EmployeeIdSearchResponseDTO.class);
-        log.debug("Response from other service: {}", response);
-        return response;
+
+
+        return restTemplate.postForObject(
+                url, employerIdSearchDTO, EmployeeIdSearchResponseDTO.class);
     }
 
     public BankAccountResponseDTO addBankAccountResponse(BankAccountDTO bankAccountDTO, int employeeId){
@@ -44,8 +43,7 @@ public class BankAccountHelper {
         String bankAccountUrl=baseUrl+ADD_BANK_ACCOUNT_API;
         Map<String,Integer> uriVariable=new HashMap<>();
         uriVariable.put("employerId ",employeeId);
-        BankAccountResponseDTO bankAccountResponseDTO=  restTemplate.postForObject(bankAccountUrl,bankAccountDTO,BankAccountResponseDTO.class,uriVariable);
-        return bankAccountResponseDTO;
+        return restTemplate.postForObject(bankAccountUrl,bankAccountDTO,BankAccountResponseDTO.class,uriVariable);
 
     }
 
@@ -56,7 +54,6 @@ public class BankAccountHelper {
         Map<String,Integer> uriVariable=new HashMap<>();
         uriVariable.put("employerId",employeeId);
         uriVariable.put("id",data);
-        BankAccountDTO bankAccountDTO= restTemplate.getForObject(url,BankAccountDTO.class,uriVariable);
-        return bankAccountDTO;
+        return restTemplate.getForObject(url,BankAccountDTO.class,uriVariable);
     }
 }

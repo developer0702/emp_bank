@@ -1,6 +1,9 @@
 package com.optum.ftps.ob.core.employerDetails.service.impl;
 
+import com.optum.ftps.ob.core.employerDetails.constants.BankAccountConstants;
+import com.optum.ftps.ob.core.employerDetails.dtos.BankAccountIdentifierDTO;
 import com.optum.ftps.ob.core.employerDetails.dtos.ContributionBankAccountDTO;
+import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailDTO;
 import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailsResponseDTO;
 import com.optum.ftps.ob.core.employerDetails.dtos.bankaccount.*;
 import com.optum.ftps.ob.core.employerDetails.helper.BankAccountHelper;
@@ -15,10 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -60,10 +60,7 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
        List<DataDTO> data= response.getData();
        EmployerDTO employerDTO= data.get(0).getEmployer();
        int employeeId=employerDTO.getId();
-      // List<BankAccountDTO> bankAccountDTOList=employerDTO.getBankAccounts();
-       //if(bankAccountDTOList!=null && bankAccountDTOList.isEmpty()){
-         //  if (bankAccountDTOList>0 )
-       //}
+
        var bankAccountDTO=createBankData(employerBankDetailsResponseDTO);
 
        var bankAccountResponseDTO = bankAccountHelper.addBankAccountResponse(bankAccountDTO,employeeId);
@@ -71,7 +68,27 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
        if( Objects.nonNull(bankAccountResponseDTO) && bankAccountResponseDTO.getStatus().equalsIgnoreCase("SUCCESS") && bankAccountResponseDTO.getData()>0){
           var bankAccountResponse=  bankAccountHelper.getBankAccountInfoFromBankService(employeeId,bankAccountResponseDTO.getData());
 
-           return employerBankDetailsResponseDTO;
+         if  (Objects.nonNull(bankAccountResponse)){
+             ContributionBankAccountDTO contributionBankAccountDTO=new ContributionBankAccountDTO();
+             BankAccountIdentifierDTO bankAccountIdentifierDTO=new BankAccountIdentifierDTO();
+             bankAccountIdentifierDTO.setBankAccountNumber(bankAccountResponse.getAccountNumber());
+             bankAccountIdentifierDTO.setBankRoutingNumber(bankAccountResponse.getRoutingNumber());
+             contributionBankAccountDTO.setBankAccountIdentifier(bankAccountIdentifierDTO);
+             contributionBankAccountDTO.setBankAccountNickName(bankAccountResponse.getNickName());
+             contributionBankAccountDTO.setBankName(bankAccountResponse.getBankName());
+             contributionBankAccountDTO.setBankSequenceNumber(String.valueOf(bankAccountResponse.getId()));
+
+             List<ContributionBankAccountDTO> contributionBankAccounts=new ArrayList<>();
+             contributionBankAccounts.add(contributionBankAccountDTO);
+             EmployerBankDetailDTO employerBankDetailDTO=new EmployerBankDetailDTO();
+             employerBankDetailDTO.setContributionBankAccounts(contributionBankAccounts);
+             employerBankDetailsResponseDTO.setEmployerBankDetail(employerBankDetailDTO);
+             employerBankDetailsResponseDTO.setRequestUserId(employerBankDetailsResponseDTO.getRequestUserId());
+             employerBankDetailsResponseDTO.setRequestId(employerBankDetailsResponseDTO.getRequestId());
+             employerBankDetailsResponseDTO.setSourceSystemId(employerBankDetailsResponseDTO.getSourceSystemId());
+             return employerBankDetailsResponseDTO;
+         }
+
 }
         return null;
     }
@@ -86,11 +103,15 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
             bankAccountDTO.setAccountNumber(contributionBankAccountDTO.getBankAccountIdentifier().getBankRoutingNumber());
             bankAccountDTO.setAccountStatus(contributionBankAccountDTO.getBankAccountTypeCode().getCode());
             bankAccountDTO.setAccountStatus(contributionBankAccountDTO.getBankAccountStatus().getCodeName());
-            bankAccountDTO.setUsage("HSA_FUNDING");
-            bankAccountDTO.setSource("EUREKA");
+            bankAccountDTO.setUsage(BankAccountConstants.HSA_FUNDING);
+            bankAccountDTO.setSource(BankAccountConstants.EUREKA);
             bankAccountDTO.setCorrelationId("1234");
         }
        return bankAccountDTO;
+    }
+
+    public ContributionBankAccountDTO getContributionInfo(){
+
     }
 
 
