@@ -100,7 +100,7 @@ runs:
     shell: bash
     run: |
       echo "Pulling Helm Chart from ${{ inputs.artifactory-url }}"
-      curl -H "X-JFrog-Art-Api:${{ inputs.registry-token }}" -O https://repo1.uhc.com/artifactory/helm-local/optum-ob-core-helm/ob-core-contribution-helm/ob-core-contribution-api-${{ inputs.chart-version }}.tgz
+      curl -H "X-JFrog-Art-Api:${{ inputs.registry-token }}" -O https://repo1.uhc.com/artifactory/helm-local/optum-ob-core-helm/ob-core-employer-details-helm/ob-core-employer-details-api-${{ inputs.chart-version }}.tgz
 
       mkdir helm-chart
       tar zxvf ./${{ inputs.release-name }}-${{ inputs.chart-version }}.tgz -C helm-chart

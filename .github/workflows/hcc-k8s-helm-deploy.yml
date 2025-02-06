@@ -16,7 +16,7 @@ permissions:
         description: Release name of the service
         required: false
         type: string
-        default: ob-core-employerDetails-api
+        default: ob-core-employer-details-api
       image-tag:
         description: Docker Image tag to pull and deploy
         required: true

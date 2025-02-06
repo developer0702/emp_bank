@@ -46,7 +46,7 @@ ENV ES_AGENT="-javaagent:/opt/elastic/apm/elastic-apm-agent.jar"
 
 # ElasticAPM required environment variables
 #  Defaulted to Development environment values! Can and should be overridden by pod env variables
-ENV ELASTIC_APM_SERVICE_NAME="ob_core_contribution-api_uhgwm110-005677"
+ENV ELASTIC_APM_SERVICE_NAME="ob_core_employer-details-api_uhgwm110-005677"
 ENV ELASTIC_APM_GLOBAL_LABELS="com_uhg_appid=uhgwm110-005677"
 ENV ELASTIC_APM_SERVER_URL="https://eapm-nonprod.uhc.com:443"
 ENV ELASTIC_APM_VERIFY_SERVER_CERT="false"
@@ -58,9 +58,9 @@ RUN addgroup -S spring && adduser -S spring -G spring
 
 USER spring:spring
 
-COPY ./target/*.jar ContributionApi.jar
+COPY ./target/*.jar EmployerDetailsApi.jar
 COPY ./src/main/resources/* ./
 
 WORKDIR /
 
-CMD ["/bin/sh", "-c","java $ES_AGENT -jar /ContributionApi.jar"]
+CMD ["/bin/sh", "-c","java $ES_AGENT -jar /EmployerDetailsApi.jar"]

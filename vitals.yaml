@@ -5,7 +5,7 @@ metadata:
   riskCategory: 0
   contactEmail: Team_OBI@ds.uhc.com
   caAgileId: does not use rally
-  projectKey: com.optum.ftps:ob-core-contribution-api
-  projectFriendlyName: ob-core-contribution-api
+  projectKey: com.optum.ftps:ob-core-employer-details-api
+  projectFriendlyName: ob-core-employer-details-api
   componentType: code
   targetQG: GATE_08

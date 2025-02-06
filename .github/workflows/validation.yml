@@ -22,7 +22,7 @@ concurrency:
 jobs:
   build-and-quality-scans:
     env:
-      IMAGE_NAME: ob-innovation/contribution-api
+      IMAGE_NAME: ob-innovation/employer-details-api
       DOCKER_REPOSITORY: docker.repo1.uhc.com
       JAVA_VERSION: 21
       MAVEN_VERSION: 3.9.6

@@ -1,0 +1,221 @@
+{
+    "info": {
+        "_postman_id": "d4c1d79e-f696-4bcf-b57b-8d3a5c45b635",
+        "name": "OBI - Employer Details",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "HCC K8S",
+            "item": [
+                {
+                    "name": "GET - Readiness",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/health/readiness",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "health",
+                                "readiness"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET - Liveness",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/health/liveness",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "health",
+                                "liveness"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "GET - Health",
+            "protocolProfileBehavior": {
+                "strictSSL": false
+            },
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/health",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "health"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "GET - ContributionFileNames",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/getEmployerContributionFileNames?contributionFilePortalId=100",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "getEmployerContributionFileNames"
+                    ],
+                    "query": [
+                        {
+                            "key": "contributionFilePortalId",
+                            "value": "100"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "GET - EmployerFileHistory",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/getEmployerContributionFileHistory?customerPolicyNumber=TEST7&effectiveTransactionDate=2024-09-27",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "getEmployerContributionFileHistory"
+                    ],
+                    "query": [
+                        {
+                            "key": "customerPolicyNumber",
+                            "value": "TEST7"
+                        },
+                        {
+                            "key": "effectiveTransactionDate",
+                            "value": "2024-09-27"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "GET - ContributionFileTransaction",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/getEmployerContributionFileTransactions?contributionFilePortalId=100",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "getEmployerContributionFileTransactions"
+                    ],
+                    "query": [
+                        {
+                            "key": "contributionFilePortalId",
+                            "value": "100"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "POST - EmployerDetails",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n  \"requestId\": \"12345\",\r\n  \"fileDetails\": [\r\n    {\r\n      \"contributionFileId\":\"31767\",\r\n      \"requestType\":\"I\"\r\n    },\r\n    {\r\n      \"contributionFileId\":\"8470\",\r\n      \"requestType\":\"A\"\r\n    }\r\n    \r\n  ]\r\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{base_url}}/contributionDetails",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "contributionDetails"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "POST - ContributionSummary",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n  \"employerGroupId\": \"TEST7\",\r\n  \"restrictToFunded\":\"Y\",\r\n  \"dateFrom\":\"2020-01-01\",\r\n  \"dateTo\":\"2024-01-09\"\r\n}\r\n",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{base_url}}/contributionSummary",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "contributionSummary"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "PATCH - ContributionFileStatus",
+            "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n  \"contributionFileId\": \"746\",\r\n  \"customerFundId\":\"73\",\r\n  \"effectiveTransactionDate\":\"2020-01-01\",\r\n  \"changedByName\":\"changer\",\r\n  \"commentText\":\"Dummy test\",\r\n  \"fileStatusCode\":\"D\"\r\n}\r\n",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{base_url}}/updateContributionFileStatus",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "updateContributionFileStatus"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ]
+}

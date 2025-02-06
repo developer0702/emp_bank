@@ -1,4 +1,4 @@
-# ob-core-employerDetails-api
+# ob-core-employer-details-api
 
 The EmployerDetails API service.
 

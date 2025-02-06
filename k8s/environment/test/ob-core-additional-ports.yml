@@ -3,7 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: ob-core-additional-ports
-  namespace: cb-contri-test
+  namespace: cb-empdetails-test
 spec:
   ingress:
   - ports:

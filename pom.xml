@@ -5,15 +5,15 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.2</version>
         <relativePath></relativePath>
     </parent>
 
     <groupId>com.optum.ftps</groupId>
-    <artifactId>ob-core-employerDetails-api</artifactId>
+    <artifactId>ob-core-employer-details-api</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
-    <name>ob-core-employerDetails-api</name>
+    <name>ob-core-employer-details-api</name>
 
     <properties>
 
@@ -346,8 +346,8 @@
                         <configuration>
                             <inputSpec>${project.basedir}/src/main/resources/openapi/employer-details-api-spec.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.optum.ftps.ob.core.employerDetails.api.v1</apiPackage>
-                            <modelPackage>com.optum.ftps.ob.core.employerDetails.model.v1</modelPackage>
+                            <apiPackage>com.optum.ftps.ob.core.employer.details.api.v1</apiPackage>
+                            <modelPackage>com.optum.ftps.ob.core.employer.details.model.v1</modelPackage>
                             <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
                             <configOptions>
                                 <java21>true</java21>
@@ -362,7 +362,7 @@
                                     @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)</additionalModelTypeAnnotations>
                             </configOptions>
                             <importMappings>
-                                <importMapping>ErrorResponse=com.optum.ftps.ob.core.employerDetails.exceptions.model.ErrorResponse</importMapping>
+                                <importMapping>ErrorResponse=com.optum.ftps.ob.core.employer.details.exceptions.model.ErrorResponse</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

@@ -1,6 +1,6 @@
 ## HCC K8S Support
 
-Temporary home of support files and scripts used to manage or configure the deployment of the Contribution API service.
+Temporary home of support files and scripts used to manage or configure the deployment of the EmployerDetails API service.
 These will likely move to a new home once we have things working consistently.
 
 # Ingress, Egress, and Port Usage

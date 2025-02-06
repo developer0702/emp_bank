@@ -3,7 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: ob-core-additional-ports
-  namespace: cb-contri-prod
+  namespace: cb-empdetails-prod
 spec:
   ingress:
   - ports:
