@@ -1,7 +1,6 @@
 package com.optum.ftps.ob.core.employerDetails.service.impl;
 
 import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailsResponseDTO;
-import com.optum.ftps.ob.core.employerDetails.repository.EmployerBankDetailsRepository;
 import com.optum.ftps.ob.core.employerDetails.service.EmployerBankDetailsService;
 
 import lombok.RequiredArgsConstructor;
@@ -14,19 +13,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsService {
 
-    private final EmployerBankDetailsRepository employerBankDetailsRepository;
-
     @Override
     public EmployerBankDetailsResponseDTO updateEmployerBankDetails(
             EmployerBankDetailsResponseDTO employerBankDetailDTO) {
         log.info("Method Start ********** updEmployerBankDetails()::", employerBankDetailDTO);
         var employerBankDetailsResponseDTO = new EmployerBankDetailsResponseDTO();
-        var empBankDetailDTO =
-                employerBankDetailsRepository.updateEmployerBankDetails(
-                        employerBankDetailDTO.getEmployerBankDetail());
-        log.info("Method End ********** updEmployerBankDetails()::", empBankDetailDTO);
-        employerBankDetailDTO.setEmployerBankDetail(empBankDetailDTO);
-        employerBankDetailsResponseDTO.setEmployerBankDetail(empBankDetailDTO);
+
+
         employerBankDetailsResponseDTO.setRequestUserId(employerBankDetailDTO.getRequestUserId());
         employerBankDetailsResponseDTO.setRequestId(employerBankDetailDTO.getRequestId());
         employerBankDetailsResponseDTO.setSourceSystemId(employerBankDetailDTO.getSourceSystemId());
