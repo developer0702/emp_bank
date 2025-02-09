@@ -1,8 +1,11 @@
 package com.optum.ftps.ob.core.employerDetails.service.impl;
 
+import com.optum.ftps.ob.core.employerDetails.constants.ErrorCodeConstants;
 import com.optum.ftps.ob.core.employerDetails.dtos.ContributionBankAccountDTO;
 import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailsResponseDTO;
 import com.optum.ftps.ob.core.employerDetails.dtos.bankaccount.*;
+import com.optum.ftps.ob.core.employerDetails.exceptions.NotFoundException;
+import com.optum.ftps.ob.core.employerDetails.exceptions.model.ErrorItem;
 import com.optum.ftps.ob.core.employerDetails.helper.BankAccountHelper;
 import com.optum.ftps.ob.core.employerDetails.service.EmployerBankDetailsService;
 
@@ -20,19 +23,52 @@ import java.util.Objects;
 public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsService {
 
     private final BankAccountHelper bankAccountHelper;
+    private final NotFoundException notFoundException;
+    private final ErrorCodeConstants errorCodeConstants;
 
     @Override
     public EmployerBankDetailsResponseDTO updateEmployerBankDetails(
             EmployerBankDetailsResponseDTO employerBankDetailDTO) {
-        log.info("Method Start ********** updEmployerBankDetails()::", employerBankDetailDTO);
-        var employerBankDetailsResponseDTO = new EmployerBankDetailsResponseDTO();
+        var employerIdSearchDTO = new EmployerIdSearchDTO();
 
+        String str = employerBankDetailDTO.getEmployerBankDetail().getEmployerGroupId();
+        log.debug(str);
+        employerIdSearchDTO.setGroupId(str);
+        var response = bankAccountHelper.getAggregatorServiceResponse(employerIdSearchDTO);
+        if (Objects.isNull(response) || Objects.isNull(response.getData()) || response.getData().isEmpty()) {
+            log.error("Employer not found");
+            ErrorItem errorItem  = ErrorItem.builder().statusCode(ErrorCodeConstants.RECORD_NOT_FOUND_ERROR_CODE)
+                    .severity("ERROR")
+                    .statusDescription("Employer not found")
+                    .build();
+            List<ErrorItem> errorItems = List.of(errorItem);
+             throw new   NotFoundException(errorItems);
+            }
+        List<DataDTO> data = response.getData();
+        EmployerDTO employerDTO = data.getFirst().getEmployer();
+        int employeeId = employerDTO.getId();
+        int bankAccountID = employerDTO.getBankAccounts().getFirst().getId();
 
-        employerBankDetailsResponseDTO.setRequestUserId(employerBankDetailDTO.getRequestUserId());
-        employerBankDetailsResponseDTO.setRequestId(employerBankDetailDTO.getRequestId());
-        employerBankDetailsResponseDTO.setSourceSystemId(employerBankDetailDTO.getSourceSystemId());
-        log.debug("Returning employer details: {}", employerBankDetailsResponseDTO);
-        return employerBankDetailsResponseDTO;
+        var bankAccountDTO = createBankData(employerBankDetailDTO);
+
+        var bankAccountResponseDTO =
+                bankAccountHelper.updateBankAccountResponse(bankAccountDTO, employeeId, bankAccountID);
+
+        if (Objects.nonNull(bankAccountResponseDTO)
+                && bankAccountResponseDTO.getStatus().equalsIgnoreCase("SUCCESS")
+                && bankAccountResponseDTO.getData() > 0) {
+//            var bankAccountResponse =
+//                    bankAccountHelper.getBankAccountInfoFromBankService(
+//                            employeeId, bankAccountResponseDTO.getData());
+
+            return employerBankDetailDTO;
+        }else{
+            log.error("Error in updating bank account details");
+
+        }
+
+        return null;
+
     }
 
     @Override

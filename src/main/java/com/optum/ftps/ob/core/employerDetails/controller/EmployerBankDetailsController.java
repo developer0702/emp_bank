@@ -1,11 +1,12 @@
 package com.optum.ftps.ob.core.employerDetails.controller;
 
-import com.optum.ftps.ob.core.employerDetails.api.v1.EmployerBankDetailsApi;
+
+import com.optum.ftps.ob.core.employer.details1.api.v1.EmployerBankDetailsApi;
+import com.optum.ftps.ob.core.employer.details1.model.v1.UpdateEmpBankDetailsRequest;
+import com.optum.ftps.ob.core.employer.details1.model.v1.UpdateEmpBankDetailsResponse;
 import com.optum.ftps.ob.core.employerDetails.exceptions.ValidationException;
 import com.optum.ftps.ob.core.employerDetails.mapper.EmployerBankDetailsMapper;
 import com.optum.ftps.ob.core.employerDetails.mapper.EmployerBankDetailsResponseMapper;
-import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsRequest;
-import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsResponse;
 import com.optum.ftps.ob.core.employerDetails.service.EmployerBankDetailsService;
 
 import com.optum.ftps.ob.core.employerDetails.validator.EmployerBankDetailsValidator;

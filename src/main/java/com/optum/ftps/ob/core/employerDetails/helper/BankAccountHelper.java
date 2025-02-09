@@ -21,6 +21,8 @@ public class BankAccountHelper {
     private static final String EMPLOYER_ID_SEARCH = "/association/search";
     private static final String ADD_BANK_ACCOUNT_API=  "/api/v1/employer/{employerId}/bank-account";
     private static final String GET_SPECIFIC_BANK_ACCOUNT_API="/api/v1/employer/{employerId}/bank-account/{id}";
+    private static final String UPDATE_SPECIFIC_BANK_ACCOUNT_API="/api/v1/employer/{employerId}/bank-account/{id}";
+
     private final RestTemplate restTemplate;
     @Value("${aggregate.base.url}")
     private String aggregateBaseUrl;
@@ -54,5 +56,14 @@ public class BankAccountHelper {
         uriVariable.put("employerId",employeeId);
         uriVariable.put("id",data);
         return restTemplate.getForObject(url,BankAccountDTO.class,uriVariable);
+    }
+    public BankAccountResponseDTO updateBankAccountResponse(BankAccountDTO bankAccountDTO, int employerId,int bankAccountId){
+
+        String bankAccountUrl=baseUrl+UPDATE_SPECIFIC_BANK_ACCOUNT_API;
+        Map<String,Integer> uriVariable=new HashMap<>();
+        uriVariable.put("employerId ",employerId);
+        uriVariable.put("id ",bankAccountId);
+        return restTemplate.postForObject(bankAccountUrl,bankAccountDTO,BankAccountResponseDTO.class,uriVariable);
+
     }
 }

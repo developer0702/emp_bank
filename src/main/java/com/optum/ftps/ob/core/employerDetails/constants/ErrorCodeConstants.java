@@ -15,7 +15,7 @@ public class ErrorCodeConstants {
     public static final int NO_STATEMENT_DATA_AVAILABLE = 4;
 
     // Constant for record not found error
-    public static final int RECORD_NOT_FOUND_ERROR_CODE = 5;
+    public static final String RECORD_NOT_FOUND_ERROR_CODE = "Employer not found";
 
     // Constant for invalid end date error
     public static final int INVALID_END_DATE = 6;

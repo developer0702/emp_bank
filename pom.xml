@@ -362,7 +362,7 @@
                                     @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)</additionalModelTypeAnnotations>
                             </configOptions>
                             <importMappings>
-                                <importMapping>ErrorResponse=com.optum.ftps.ob.core.employerDetails.exceptions.model.ErrorResponse</importMapping>
+                                <importMapping>ErrorResponse=com.optum.ftps.ob.core.employer.details.exceptions.model.ErrorResponse</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

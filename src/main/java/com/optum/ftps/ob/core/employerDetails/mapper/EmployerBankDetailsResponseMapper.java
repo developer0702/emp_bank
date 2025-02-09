@@ -1,7 +1,7 @@
 package com.optum.ftps.ob.core.employerDetails.mapper;
 
+import com.optum.ftps.ob.core.employer.details1.model.v1.UpdateEmpBankDetailsResponse;
 import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailsResponseDTO;
-import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsResponse;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
