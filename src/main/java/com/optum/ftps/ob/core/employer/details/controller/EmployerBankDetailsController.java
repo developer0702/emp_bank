@@ -26,7 +26,7 @@ public class EmployerBankDetailsController implements EmployerBankDetailsApi {
 
     @Override
     public ResponseEntity<UpdateEmpBankDetailsResponse> updEmployerBankDetails(
-            @Valid @RequestBody UpdateEmpBankDetailsRequest request) {
+            @Valid @RequestBody UpdateEmpBankDetailsRequest request) throws ValidationException {
         log.debug("Received request to update employer bank details: {}", request);
 
         var requestDTO = employerBankDetailsMapper.map(request);
