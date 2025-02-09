@@ -1,4 +1,4 @@
-package com.optum.ftps.ob.core.employerDetails.constants;
+package com.optum.ftps.ob.core.employer.details.constants;
 
 public class BankAccountConstants {
     public static final String HSA_FUNDING = "HSA_FUNDING";
