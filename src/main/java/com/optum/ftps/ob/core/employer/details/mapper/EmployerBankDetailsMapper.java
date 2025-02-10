@@ -12,6 +12,6 @@ import org.mapstruct.ReportingPolicy;
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface EmployerBankDetailsMapper {
-   // @Mapping(target = "employerBankDetail", source = "request")
+    // @Mapping(target = "employerBankDetail", source = "request")
     EmployerBankDetailsResponseDTO map(UpdateEmpBankDetailsRequest request);
 }
