@@ -16,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 import java.util.Objects;
@@ -57,23 +55,35 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
         int bankAccountID = employerDTO.getBankAccounts().getFirst().getId();
 
         List<ContributionBankAccountDTO> contributionBankAccounts =
-                employerBankDetailDTO
-                        .getEmployerBankDetail()
-                        .getContributionBankAccounts();
-
+                employerBankDetailDTO.getEmployerBankDetail().getContributionBankAccounts();
 
         for (ContributionBankAccountDTO contributionBankAccountDTO : contributionBankAccounts) {
             if ("Update".equalsIgnoreCase(contributionBankAccountDTO.getBankAccountOperation())) {
-                 bankAccountID = employerDTO.getBankAccounts().stream()
-                        .filter(bankAccount -> bankAccount.getAccountNumber().equals(contributionBankAccountDTO.getBankAccountIdentifier().getBankAccountNumber()))
-                        .findFirst()
-                        .orElseThrow(() -> new NotFoundException(List.of(
-                                ErrorItem.builder()
-                                        .statusCode(ErrorCodeConstants.RECORD_NOT_FOUND_ERROR_CODE)
-                                        .severity("ERROR")
-                                        .statusDescription("Bank account not found")
-                                        .build()
-                        ))).getId();
+                bankAccountID =
+                        employerDTO.getBankAccounts().stream()
+                                .filter(
+                                        bankAccount ->
+                                                bankAccount
+                                                        .getAccountNumber()
+                                                        .equals(
+                                                                contributionBankAccountDTO
+                                                                        .getBankAccountIdentifier()
+                                                                        .getBankAccountNumber()))
+                                .findFirst()
+                                .orElseThrow(
+                                        () ->
+                                                new NotFoundException(
+                                                        List.of(
+                                                                ErrorItem.builder()
+                                                                        .statusCode(
+                                                                                ErrorCodeConstants
+                                                                                        .RECORD_NOT_FOUND_ERROR_CODE)
+                                                                        .severity("ERROR")
+                                                                        .statusDescription(
+                                                                                "Bank account not"
+                                                                                        + " found")
+                                                                        .build())))
+                                .getId();
 
                 var bankAccountDTO = createBankData(employerBankDetailDTO);
 
@@ -102,11 +112,11 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
         String str = employerBankDetailsResponseDTO.getEmployerBankDetail().getEmployerGroupId();
         log.debug(str);
         employerIdSearchDTO.setGroupId(str);
-        var  response=bankAccountHelper.getAggregatorServiceResponse(employerIdSearchDTO);
-       List<DataDTO> data= response.getData();
-       EmployerDTO employerDTO= data.get(0).getEmployer();
-       int employeeId=employerDTO.getId();
-       var bankAccountDTO=createBankData(employerBankDetailsResponseDTO);
+        var response = bankAccountHelper.getAggregatorServiceResponse(employerIdSearchDTO);
+        List<DataDTO> data = response.getData();
+        EmployerDTO employerDTO = data.get(0).getEmployer();
+        int employeeId = employerDTO.getId();
+        var bankAccountDTO = createBankData(employerBankDetailsResponseDTO);
 
         var bankAccountResponseDTO =
                 bankAccountHelper.addBankAccountResponse(bankAccountDTO, employeeId);

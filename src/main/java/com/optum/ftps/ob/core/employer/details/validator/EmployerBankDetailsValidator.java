@@ -1,13 +1,13 @@
-package com.optum.ftps.ob.core.employerDetails.validator;
+package com.optum.ftps.ob.core.employer.details.validator;
 
 import com.optum.ftps.ob.core.employer.details.constants.EmployerDetailsConstants;
 import com.optum.ftps.ob.core.employer.details.constants.ErrorCodeConstants;
 import com.optum.ftps.ob.core.employer.details.exceptions.ValidationException;
-import com.optum.ftps.ob.core.employer.details.util.StringUtil;
 import com.optum.ftps.ob.core.employer.details.model.v1.BankAccountStatus;
 import com.optum.ftps.ob.core.employer.details.model.v1.BankAccountTypeCode;
 import com.optum.ftps.ob.core.employer.details.model.v1.ContributionBankAccount;
 import com.optum.ftps.ob.core.employer.details.model.v1.UpdateEmpBankDetailsRequest;
+import com.optum.ftps.ob.core.employer.details.util.StringUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

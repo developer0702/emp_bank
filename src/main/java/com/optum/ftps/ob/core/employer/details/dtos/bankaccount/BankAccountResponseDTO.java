@@ -10,4 +10,3 @@ public class BankAccountResponseDTO {
     private String status;
     private List<ErrorDTO> errors;
 }
-

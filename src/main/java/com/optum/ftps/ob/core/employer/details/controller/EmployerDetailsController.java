@@ -1,11 +1,11 @@
 package com.optum.ftps.ob.core.employer.details.controller;
 
+import com.optum.ftps.ob.core.employer.details.api.v1.EmployerDetailsApi;
 import com.optum.ftps.ob.core.employer.details.mapper.EmployerDetailsResponseMapper;
+import com.optum.ftps.ob.core.employer.details.model.v1.EmployerDetailsResponse;
 import com.optum.ftps.ob.core.employer.details.service.EmployerDetailsService;
 import com.optum.ftps.ob.core.employer.details.util.StringUtil;
 import com.optum.ftps.ob.core.employer.details.validator.EmployerDetailsValidator;
-import com.optum.ftps.ob.core.employer.details.api.v1.EmployerDetailsApi;
-import com.optum.ftps.ob.core.employer.details.model.v1.EmployerDetailsResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

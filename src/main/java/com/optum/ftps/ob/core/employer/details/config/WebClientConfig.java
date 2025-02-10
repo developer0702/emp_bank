@@ -1,19 +1,16 @@
 package com.optum.ftps.ob.core.employer.details.config;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
-
-import javax.net.ssl.SSLException;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
-
+import org.springframework.context.annotation.Configuration;
 
 import reactor.netty.http.client.HttpClient;
 
-
+import javax.net.ssl.SSLException;
 
 @Slf4j
 @Configuration
@@ -25,13 +22,10 @@ public class WebClientConfig {
 
     public WebClientConfig(
             @Value("${aggregate.base.url}") String employerAssociationServiceBaseUrl,
-            @Value("${base.url}") String employerServiceBaseUrl
-    ) {
+            @Value("${base.url}") String employerServiceBaseUrl) {
         this.employerAssociationServiceBaseUrl = employerAssociationServiceBaseUrl;
         this.employerServiceBaseUrl = employerServiceBaseUrl;
     }
-
-
 
     /**
      * Creates an SSL-enabled HttpClient.
@@ -55,4 +49,4 @@ public class WebClientConfig {
                             }
                         });
     }
-    }
+}
