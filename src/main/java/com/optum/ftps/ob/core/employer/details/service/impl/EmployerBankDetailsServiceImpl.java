@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +28,7 @@ import java.util.Objects;
 public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsService {
 
     private final BankAccountHelper bankAccountHelper;
-
+//    private final WebClient webClient;
 
     @Override
     public EmployerBankDetailsResponseDTO updateEmployerBankDetails(
@@ -55,25 +57,41 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
         int employeeId = employerDTO.getId();
         int bankAccountID = employerDTO.getBankAccounts().getFirst().getId();
 
-        var bankAccountDTO = createBankData(employerBankDetailDTO);
+        List<ContributionBankAccountDTO> contributionBankAccounts =
+                employerBankDetailDTO
+                        .getEmployerBankDetail()
+                        .getContributionBankAccounts();
 
-        var bankAccountResponseDTO =
-                bankAccountHelper.updateBankAccountResponse(
-                        bankAccountDTO, employeeId, bankAccountID);
 
-        if (Objects.nonNull(bankAccountResponseDTO)
-                && bankAccountResponseDTO.getStatus().equalsIgnoreCase("SUCCESS")
-                && bankAccountResponseDTO.getData() > 0) {
-            //            var bankAccountResponse =
-            //                    bankAccountHelper.getBankAccountInfoFromBankService(
-            //                            employeeId, bankAccountResponseDTO.getData());
+        for (ContributionBankAccountDTO contributionBankAccountDTO : contributionBankAccounts) {
+            if ("Update".equalsIgnoreCase(contributionBankAccountDTO.getBankAccountOperation())) {
+                 bankAccountID = employerDTO.getBankAccounts().stream()
+                        .filter(bankAccount -> bankAccount.getAccountNumber().equals(contributionBankAccountDTO.getBankAccountIdentifier().getBankAccountNumber()))
+                        .findFirst()
+                        .orElseThrow(() -> new NotFoundException(List.of(
+                                ErrorItem.builder()
+                                        .statusCode(ErrorCodeConstants.RECORD_NOT_FOUND_ERROR_CODE)
+                                        .severity("ERROR")
+                                        .statusDescription("Bank account not found")
+                                        .build()
+                        ))).getId();
 
-            return employerBankDetailDTO;
-        } else {
-            log.error("Error in updating bank account details");
+                var bankAccountDTO = createBankData(employerBankDetailDTO);
+
+                var bankAccountResponseDTO =
+                        bankAccountHelper.updateBankAccountResponse(
+                                bankAccountDTO, employeeId, bankAccountID);
+
+                if (Objects.isNull(bankAccountResponseDTO)
+                        || !bankAccountResponseDTO.getStatus().equalsIgnoreCase("SUCCESS")
+                        || bankAccountResponseDTO.getData() <= 0) {
+                    log.error("Error in updating bank account details");
+                    return null;
+                }
+            }
         }
 
-        return null;
+        return employerBankDetailDTO;
     }
 
     @Override
@@ -135,3 +153,4 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
         return bankAccountDTO;
     }
 }
+

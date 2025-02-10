@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -29,10 +30,13 @@
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.language>java</sonar.language>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.exclusions>**/*.xml</sonar.exclusions>
-        <sonar.coverage.exclusions>**/constants/**/*.*,**/Application.*,**/exceptions/**/*,**/api/**/*,**/model/**/*,**/config/**/*,
-            **/mapper/**/*</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>
+            **/constants/**/*.*,**/Application.*,**/exceptions/**/*,**/api/**/*,**/model/**/*,**/config/**/*,
+            **/mapper/**/*
+        </sonar.coverage.exclusions>
 
     </properties>
 
@@ -43,6 +47,23 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.4.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -111,6 +132,11 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-common</artifactId>
             <version>2.7.0</version>
         </dependency>
         <dependency>
@@ -344,7 +370,8 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/employer-details-api-spec.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/employer-details-api-spec.yaml
+                            </inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.optum.ftps.ob.core.employerDetails.api.v1</apiPackage>
                             <modelPackage>com.optum.ftps.ob.core.employerDetails.model.v1</modelPackage>
@@ -359,10 +386,13 @@
                                 <additionalModelTypeAnnotations>@lombok.Builder
                                     @lombok.NoArgsConstructor
                                     @lombok.AllArgsConstructor
-                                    @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)</additionalModelTypeAnnotations>
+                                    @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
+                                </additionalModelTypeAnnotations>
                             </configOptions>
                             <importMappings>
-                                <importMapping>ErrorResponse=com.optum.ftps.ob.core.employer.details.exceptions.model.ErrorResponse</importMapping>
+                                <importMapping>
+                                    ErrorResponse=com.optum.ftps.ob.core.employer.details.exceptions.model.ErrorResponse
+                                </importMapping>
                             </importMappings>
                         </configuration>
                     </execution>
