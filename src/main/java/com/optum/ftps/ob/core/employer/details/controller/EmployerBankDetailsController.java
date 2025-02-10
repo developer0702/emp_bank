@@ -35,4 +35,22 @@ public class EmployerBankDetailsController implements EmployerBankDetailsApi {
         log.debug("Employer bank details updated: {}", responseDTO);
         return ResponseEntity.ok(null);
     }
+
+    public ResponseEntity<UpdateEmpBankDetailsResponse> addEmployerBankAccountDetails(
+            @Valid @RequestBody UpdateEmpBankDetailsRequest request) {
+        log.debug("Received request to add employer bank account details: {}", request);
+
+        /*Set<String> errors = employerBankDetailsValidator.validateAddEmpBankDetails(request);
+        if (!errors.isEmpty()) {
+            log.error("Validation failed for add employer bank account details request: {}", errors);
+            return ResponseEntity.badRequest().build();
+        }*/
+
+        var requestDTO = employerBankDetailsMapper.map(request);
+        var responseDTO = employerBankDetailsService.addEmployerBankDetails(requestDTO);
+        var response = employerBankDetailsResponseMapper.map(responseDTO);
+
+        // log.debug("Employer bank account details added: {}", responseDTO);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -6,4 +6,7 @@ public interface EmployerBankDetailsService {
 
     EmployerBankDetailsResponseDTO updateEmployerBankDetails(
             EmployerBankDetailsResponseDTO employerBankDetailsResponseDTO);
+
+    EmployerBankDetailsResponseDTO addEmployerBankDetails(
+            EmployerBankDetailsResponseDTO employerBankDetailsResponseDTO);
 }

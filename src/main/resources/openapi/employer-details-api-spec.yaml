@@ -84,6 +84,33 @@ paths:
           $ref: "#/components/responses/ServerErrorResponse"
         "503":
           $ref: "#/components/responses/UnexpectedErrorResponse"
+  /addEmployerBankAccountDetails:
+    post:
+      operationId: addEmployerBankAccountDetails
+      summary: Add employer bank details based on group Id
+      tags:
+      - EmployerBankDetails
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEmpBankDetailsRequest"
+      responses:
+        "200":
+          description: Update Employer Bank Details Updated response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateEmpBankDetailsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponse"
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+        "503":
+          $ref: "#/components/responses/UnexpectedErrorResponse"
 components:
   responses:
     BadRequestErrorResponse:
