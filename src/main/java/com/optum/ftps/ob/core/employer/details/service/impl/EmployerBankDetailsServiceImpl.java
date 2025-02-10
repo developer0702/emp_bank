@@ -1,41 +1,21 @@
 package com.optum.ftps.ob.core.employer.details.service.impl;
 
-<<<<<<< HEAD:src/main/java/com/optum/ftps/ob/core/employer/details/service/impl/EmployerBankDetailsServiceImpl.java
 import com.optum.ftps.ob.core.employer.details.dtos.EmployerBankDetailsResponseDTO;
 import com.optum.ftps.ob.core.employer.details.service.EmployerBankDetailsService;
-=======
-import com.optum.ftps.ob.core.employerDetails.dtos.ContributionBankAccountDTO;
-import com.optum.ftps.ob.core.employerDetails.dtos.EmployerBankDetailsResponseDTO;
-import com.optum.ftps.ob.core.employerDetails.dtos.bankaccount.*;
-import com.optum.ftps.ob.core.employerDetails.helper.BankAccountHelper;
-import com.optum.ftps.ob.core.employerDetails.repository.EmployerBankDetailsRepository;
-import com.optum.ftps.ob.core.employerDetails.service.EmployerBankDetailsService;
->>>>>>> c7651db (aggregateSearch):src/main/java/com/optum/ftps/ob/core/employerDetails/service/impl/EmployerBankDetailsServiceImpl.java
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsService {
 
-<<<<<<< HEAD:src/main/java/com/optum/ftps/ob/core/employer/details/service/impl/EmployerBankDetailsServiceImpl.java
-=======
-    private final EmployerBankDetailsRepository employerBankDetailsRepository;
-    private final BankAccountHelper bankAccountHelper;
-
->>>>>>> c7651db (aggregateSearch):src/main/java/com/optum/ftps/ob/core/employerDetails/service/impl/EmployerBankDetailsServiceImpl.java
     @Override
     public EmployerBankDetailsResponseDTO updateEmployerBankDetails(
             EmployerBankDetailsResponseDTO employerBankDetailDTO) {
@@ -62,10 +42,7 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
        List<DataDTO> data= response.getData();
        EmployerDTO employerDTO= data.get(0).getEmployer();
        int employeeId=employerDTO.getId();
-      // List<BankAccountDTO> bankAccountDTOList=employerDTO.getBankAccounts();
-       //if(bankAccountDTOList!=null && bankAccountDTOList.isEmpty()){
-         //  if (bankAccountDTOList>0 )
-       //}
+
        var bankAccountDTO=createBankData(employerBankDetailsResponseDTO);
 
        var bankAccountResponseDTO = bankAccountHelper.addBankAccountResponse(bankAccountDTO,employeeId);
@@ -73,7 +50,27 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
        if( Objects.nonNull(bankAccountResponseDTO) && bankAccountResponseDTO.getStatus().equalsIgnoreCase("SUCCESS") && bankAccountResponseDTO.getData()>0){
           var bankAccountResponse=  bankAccountHelper.getBankAccountInfoFromBankService(employeeId,bankAccountResponseDTO.getData());
 
-           return employerBankDetailsResponseDTO;
+         if  (Objects.nonNull(bankAccountResponse)){
+             ContributionBankAccountDTO contributionBankAccountDTO=new ContributionBankAccountDTO();
+             BankAccountIdentifierDTO bankAccountIdentifierDTO=new BankAccountIdentifierDTO();
+             bankAccountIdentifierDTO.setBankAccountNumber(bankAccountResponse.getAccountNumber());
+             bankAccountIdentifierDTO.setBankRoutingNumber(bankAccountResponse.getRoutingNumber());
+             contributionBankAccountDTO.setBankAccountIdentifier(bankAccountIdentifierDTO);
+             contributionBankAccountDTO.setBankAccountNickName(bankAccountResponse.getNickName());
+             contributionBankAccountDTO.setBankName(bankAccountResponse.getBankName());
+             contributionBankAccountDTO.setBankSequenceNumber(String.valueOf(bankAccountResponse.getId()));
+
+             List<ContributionBankAccountDTO> contributionBankAccounts=new ArrayList<>();
+             contributionBankAccounts.add(contributionBankAccountDTO);
+             EmployerBankDetailDTO employerBankDetailDTO=new EmployerBankDetailDTO();
+             employerBankDetailDTO.setContributionBankAccounts(contributionBankAccounts);
+             employerBankDetailsResponseDTO.setEmployerBankDetail(employerBankDetailDTO);
+             employerBankDetailsResponseDTO.setRequestUserId(employerBankDetailsResponseDTO.getRequestUserId());
+             employerBankDetailsResponseDTO.setRequestId(employerBankDetailsResponseDTO.getRequestId());
+             employerBankDetailsResponseDTO.setSourceSystemId(employerBankDetailsResponseDTO.getSourceSystemId());
+             return employerBankDetailsResponseDTO;
+         }
+
 }
         return null;
     }
@@ -88,11 +85,15 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
             bankAccountDTO.setAccountNumber(contributionBankAccountDTO.getBankAccountIdentifier().getBankRoutingNumber());
             bankAccountDTO.setAccountStatus(contributionBankAccountDTO.getBankAccountTypeCode().getCode());
             bankAccountDTO.setAccountStatus(contributionBankAccountDTO.getBankAccountStatus().getCodeName());
-            bankAccountDTO.setUsage("HSA_FUNDING");
-            bankAccountDTO.setSource("EUREKA");
+            bankAccountDTO.setUsage(BankAccountConstants.HSA_FUNDING);
+            bankAccountDTO.setSource(BankAccountConstants.EUREKA);
             bankAccountDTO.setCorrelationId("1234");
         }
        return bankAccountDTO;
+    }
+
+    public ContributionBankAccountDTO getContributionInfo(){
+
     }
 
 
