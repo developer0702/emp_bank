@@ -29,7 +29,6 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
 
     private final BankAccountHelper bankAccountHelper;
 
-
     @Override
     public EmployerBankDetailsResponseDTO updateEmployerBankDetails(
             EmployerBankDetailsResponseDTO employerBankDetailDTO) {
@@ -107,7 +106,6 @@ public class EmployerBankDetailsServiceImpl implements EmployerBankDetailsServic
        List<DataDTO> data= response.getData();
        EmployerDTO employerDTO= data.get(0).getEmployer();
        int employeeId=employerDTO.getId();
-
        var bankAccountDTO=createBankData(employerBankDetailsResponseDTO);
 
         var bankAccountResponseDTO =

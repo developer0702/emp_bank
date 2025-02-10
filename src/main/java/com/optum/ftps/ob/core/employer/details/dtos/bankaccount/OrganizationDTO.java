@@ -1,4 +1,4 @@
-package com.optum.ftps.ob.core.employerDetails.dtos.bankaccount;
+package com.optum.ftps.ob.core.employer.details.dtos.bankaccount;
 
 import lombok.Data;
 

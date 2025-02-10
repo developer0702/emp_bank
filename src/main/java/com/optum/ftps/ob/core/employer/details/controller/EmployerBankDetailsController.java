@@ -5,11 +5,11 @@ import com.optum.ftps.ob.core.employer.details.mapper.EmployerBankDetailsMapper;
 import com.optum.ftps.ob.core.employer.details.mapper.EmployerBankDetailsResponseMapper;
 import com.optum.ftps.ob.core.employer.details.service.EmployerBankDetailsService;
 import com.optum.ftps.ob.core.employer.details.validator.EmployerBankDetailsValidator;
+import com.optum.ftps.ob.core.employer.details.api.v1.EmployerBankDetailsApi;
+import com.optum.ftps.ob.core.employer.details.model.v1.UpdateEmpBankDetailsRequest;
+import com.optum.ftps.ob.core.employer.details.model.v1.UpdateEmpBankDetailsResponse;
+import com.optum.ftps.ob.core.employer.details.service.EmployerBankDetailsService;
 
-
-import com.optum.ftps.ob.core.employerDetails.api.v1.EmployerBankDetailsApi;
-import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsRequest;
-import com.optum.ftps.ob.core.employerDetails.model.v1.UpdateEmpBankDetailsResponse;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
