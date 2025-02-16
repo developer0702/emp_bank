@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -21,22 +20,19 @@
         <java.version>21</java.version>
         <maven.version>3.9.6</maven.version>
         <swagger.version>3.0.0</swagger.version>
-        <openapigenerator.version>7.10.0</openapigenerator.version>
+        <openapigenerator.version>7.3.0</openapigenerator.version>
         <jackson-databind.version>0.2.1</jackson-databind.version>
-        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
         <mapstruct-processor.version>1.6.3</mapstruct-processor.version>
         <lombok.version>1.18.36</lombok.version>
         <mockito.version>5.14.2</mockito.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.language>java</sonar.language>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.exclusions>**/*.xml</sonar.exclusions>
-        <sonar.coverage.exclusions>
-            **/constants/**/*.*,**/Application.*,**/exceptions/**/*,**/api/**/*,**/model/**/*,**/config/**/*,
-            **/mapper/**/*
-        </sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>**/constants/**/*.*,**/Application.*,**/exceptions/**/*,**/api/**/*,**/model/**/*,**/config/**/*,
+            **/mapper/**/*</sonar.coverage.exclusions>
 
     </properties>
 
@@ -73,10 +69,7 @@
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
@@ -86,23 +79,19 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <!--  END SPRING FRAMEWORK  -->
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.ibm.db2.jcc</groupId>
             <artifactId>db2jcc4</artifactId>
             <version>2.1.102</version>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>2.3.232</version>
-            <scope>runtime</scope>
-        </dependency>
+        </dependency>-->
+
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
@@ -185,33 +174,47 @@
 
     <repositories>
         <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
             <id>central</id>
-            <name>libs-releases</name>
-            <url>https://repo1.uhc.com:443/artifactory/libs-releases</url>
-        </repository>
-        <repository>
-            <snapshots></snapshots>
-            <id>snapshots</id>
-            <name>libs-snapshots</name>
-            <url>https://repo1.uhc.com:443/artifactory/libs-snapshots</url>
-        </repository>
-        <repository>
-            <id>UHG-Releases</id>
-            <name>Local Repository for UHG Application Releases</name>
-            <url>https://repo1.uhc.com/artifactory/UHG-Releases</url>
-        </repository>
-        <repository>
-            <id>UHG-Snapshots</id>
-            <name>Local Repository for UHG Application Snapshots</name>
-            <url>https://repo1.uhc.com/artifactory/UHG-Snapshots</url>
+            <url>https://repo.maven.apache.org/maven2/</url>
         </repository>
     </repositories>
 
     <pluginRepositories>
         <pluginRepository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <!-- <repositories>
+         <repository>
+             <snapshots>
+                 <enabled>false</enabled>
+             </snapshots>
+             <id>central</id>
+             <name>libs-releases</name>
+             <url>https://repo1.uhc.com:443/artifactory/libs-releases</url>
+         </repository>
+         <repository>
+             <snapshots></snapshots>
+             <id>snapshots</id>
+             <name>libs-snapshots</name>
+             <url>https://repo1.uhc.com:443/artifactory/libs-snapshots</url>
+         </repository>
+         <repository>
+             <id>UHG-Releases</id>
+             <name>Local Repository for UHG Application Releases</name>
+             <url>https://repo1.uhc.com/artifactory/UHG-Releases</url>
+         </repository>
+         <repository>
+             <id>UHG-Snapshots</id>
+             <name>Local Repository for UHG Application Snapshots</name>
+             <url>https://repo1.uhc.com/artifactory/UHG-Snapshots</url>
+         </repository>
+     </repositories>-->
+
+    <!--<pluginRepositories>
+        <pluginRepository>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -225,14 +228,13 @@
             <name>libs-snapshots</name>
             <url>https://repo1.uhc.com:443/artifactory/libs-snapshots</url>
         </pluginRepository>
-    </pluginRepositories>
+    </pluginRepositories>-->
 
     <build>
         <plugins>
-            <plugin>
+            <!-- <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <id>enforce</id>
@@ -254,43 +256,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/Application.class</exclude>
-                        <exclude>**/constants/**</exclude>
-                        <exclude>**/dto/**</exclude>
-                        <exclude>**/exceptions/**</exclude>
-                        <exclude>**/api/**/*</exclude>
-                        <exclude>**/model/**/*</exclude>
-                        <exclude>**/config/**/*</exclude>
-                        <exclude>**/mapper/**/*</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>pre-unit-test</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <propertyName>surefireArgLine</propertyName>
-                            <append>true</append>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <phase>test</phase>
-                    </execution>
-                </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -304,7 +270,7 @@
                 </configuration>
             </plugin>
             <!-- New with Java 21, need to add this configuration to support how Mockito dynamically loads agents    -->
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.8.1</version>
@@ -315,7 +281,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -370,8 +336,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/employer-details-api-spec.yaml
-                            </inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/employer-details-api-spec.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.optum.ftps.ob.core.employer.details.api.v1</apiPackage>
                             <modelPackage>com.optum.ftps.ob.core.employer.details.model.v1</modelPackage>
@@ -383,22 +348,20 @@
                                 <interfaceOnly>true</interfaceOnly>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <unhandledException>true</unhandledException>
+                                <generateAliasAsModel>true</generateAliasAsModel>
                                 <additionalModelTypeAnnotations>@lombok.Builder
                                     @lombok.NoArgsConstructor
                                     @lombok.AllArgsConstructor
-                                    @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
-                                </additionalModelTypeAnnotations>
+                                    @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)</additionalModelTypeAnnotations>
                             </configOptions>
                             <importMappings>
-                                <importMapping>
-                                    ErrorResponse=com.optum.ftps.ob.core.employer.details.exceptions.model.ErrorResponse
-                                </importMapping>
+                                <importMapping>ErrorResponse=com.optum.ftps.ob.core.employer.details.exceptions.model.ErrorResponse</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>
                 </executions>
-
             </plugin>
+
             <!-- Spotless plugin -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>

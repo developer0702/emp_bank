@@ -3,8 +3,6 @@ package com.optum.ftps.ob.core.employer.details.validator;
 import com.optum.ftps.ob.core.employer.details.constants.EmployerDetailsConstants;
 import com.optum.ftps.ob.core.employer.details.constants.ErrorCodeConstants;
 import com.optum.ftps.ob.core.employer.details.exceptions.ValidationException;
-import com.optum.ftps.ob.core.employer.details.model.v1.BankAccountStatus;
-import com.optum.ftps.ob.core.employer.details.model.v1.BankAccountTypeCode;
 import com.optum.ftps.ob.core.employer.details.model.v1.ContributionBankAccount;
 import com.optum.ftps.ob.core.employer.details.model.v1.UpdateEmpBankDetailsRequest;
 import com.optum.ftps.ob.core.employer.details.util.StringUtil;
@@ -27,7 +25,7 @@ public class EmployerBankDetailsValidator {
 
     public Set<Integer> validateEmployerBankDetails(UpdateEmpBankDetailsRequest request)
             throws ValidationException {
-        sanitizeRequest(request);
+        // sanitizeRequest(request);
         Set<Integer> errors = new TreeSet<>();
 
         if (!checkRequiredFieldsPresent(request)) {
@@ -36,24 +34,17 @@ public class EmployerBankDetailsValidator {
                     CONTEXT_VALIDATE);
             errors.add(ErrorCodeConstants.REQUIRED_FIELDS_MISSING);
         }
-        if (!checkFieldsFormat(request)) {
-            log.error("{} - Inside validation Exception for invalid format", CONTEXT_VALIDATE);
-            errors.add(ErrorCodeConstants.INCORRECT_FORMAT);
-        }
 
         return errors;
     }
 
     private boolean checkRequiredFieldsPresent(UpdateEmpBankDetailsRequest request) {
-        return !StringUtil.isEmpty(request.getRequestUserId())
-                && !StringUtil.isEmpty(request.getSourceSystemId())
-                && !StringUtil.isEmpty(request.getRequestId())
-                && request.getEmployerBankDetail() != null
-                && !StringUtil.isEmpty(request.getEmployerBankDetail().getEmployerGroupId())
-                && checkRequiredContributionFieldsPresent(request);
+        return !StringUtil.isEmpty(request.getRequestId())
+                && !StringUtil.isEmpty(request.getEmployerGroupId())
+                && !StringUtil.isEmpty(request.getEmployerBankSeqNum());
     }
 
-    private boolean checkRequiredContributionFieldsPresent(UpdateEmpBankDetailsRequest request) {
+    /*private boolean checkRequiredContributionFieldsPresent(UpdateEmpBankDetailsRequest request) {
         boolean reqFieldPrst = false;
         List<ContributionBankAccount> contributionAccounts =
                 request.getEmployerBankDetail().getContributionBankAccounts();
@@ -71,9 +62,9 @@ public class EmployerBankDetailsValidator {
             }
         }
         return reqFieldPrst;
-    }
+    }*/
 
-    private boolean checkFieldsFormat(UpdateEmpBankDetailsRequest request)
+    /* private boolean checkFieldsFormat(UpdateEmpBankDetailsRequest request)
             throws ValidationException {
         boolean flag = true;
         List<ContributionBankAccount> contributionAccounts =
@@ -89,9 +80,9 @@ public class EmployerBankDetailsValidator {
         }
 
         return flag;
-    }
+    }*/
 
-    private boolean checkRequestFieldsFormat(UpdateEmpBankDetailsRequest request) {
+    /*private boolean checkRequestFieldsFormat(UpdateEmpBankDetailsRequest request) {
         boolean flag = true;
         if (request.getRequestId() != null
                 && request.getRequestId().trim().length()
@@ -129,13 +120,13 @@ public class EmployerBankDetailsValidator {
                 || !StringUtil.isAlphanumeric(
                         request.getEmployerBankDetail().getEmployerGroupId())) {
             log.error(
-                    "Length of EmployerGroupId should be less than or equal to 9**** {}",
+                    "Length of EmployerGroupId should be less than or equal to 11**** {}",
                     request.getEmployerBankDetail().getEmployerGroupId());
             flag = false;
         }
 
         return flag;
-    }
+    }*/
 
     private boolean checkContributionAccountsFormat(
             List<ContributionBankAccount> contributionAccounts) throws ValidationException {
@@ -265,7 +256,7 @@ public class EmployerBankDetailsValidator {
         return flag;
     }
 
-    private void sanitizeRequest(UpdateEmpBankDetailsRequest request) {
+    /* private void sanitizeRequest(UpdateEmpBankDetailsRequest request) {
         request.setRequestId(StringUtil.sanitize(request.getRequestId()));
         request.setRequestUserId(StringUtil.sanitize(request.getRequestUserId()));
         request.setSourceSystemId(StringUtil.sanitize(request.getSourceSystemId()));
@@ -303,5 +294,5 @@ public class EmployerBankDetailsValidator {
             contributionBankAccount.setBankAccountOperation(
                     StringUtil.sanitize(contributionBankAccount.getBankAccountOperation()));
         }
-    }
+    }*/
 }

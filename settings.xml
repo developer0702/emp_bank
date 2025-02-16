@@ -1,55 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-Licensed to the Apache Software Foundation (ASF) under one
-or more contributor license agreements.  See the NOTICE file
-distributed with this work for additional information
-regarding copyright ownership.  The ASF licenses this file
-to you under the Apache License, Version 2.0 (the
-"License"); you may not use this file except in compliance
-with the License.  You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing,
-software distributed under the License is distributed on an
-"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied.  See the License for the
-specific language governing permissions and limitations
-under the License.
--->
-
-<!--
- | This is the configuration file for Maven. It can be specified at two levels:
- |
- |  1. User Level. This settings.xml file provides configuration for a single user,
- |                 and is normally provided in ${user.home}/.m2/settings.xml.
- |
- |                 NOTE: This location can be overridden with the CLI option:
- |
- |                 -s /path/to/user/settings.xml
- |
- |  2. Global Level. This settings.xml file provides configuration for all Maven
- |                 users on a machine (assuming they're all using the same Maven
- |                 installation). It's normally provided in
- |                 ${maven.home}/conf/settings.xml.
- |
- |                 NOTE: This location can be overridden with the CLI option:
- |
- |                 -gs /path/to/global/settings.xml
- |
- | The sections in this sample file are intended to give you a running start at
- | getting the most out of your Maven installation. Where appropriate, the default
- | values (values used when the setting is not specified) are provided.
- |
- |-->
-<settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<!DOCTYPE settings [
+        <!ELEMENT settings (mirrors|profiles|activeProfiles)*>
+        <!ATTLIST settings
+                xmlns:xsi CDATA #REQUIRED
+                xmlns CDATA #REQUIRED
+                xsi:schemaLocation CDATA #REQUIRED>
+        <!ELEMENT mirrors (mirror)*>
+        <!ELEMENT mirror (id|mirrorOf|url)*>
+        <!ELEMENT id (#PCDATA)>
+        <!ELEMENT mirrorOf (#PCDATA)>
+        <!ELEMENT url (#PCDATA)>
+        <!ELEMENT profiles (profile)*>
+        <!ELEMENT profile (id|repositories|pluginRepositories)*>
+        <!ELEMENT repositories (repository)*>
+        <!ELEMENT repository (id|name|url|releases|snapshots)*>
+        <!ELEMENT name (#PCDATA)>
+        <!ELEMENT releases (enabled|updatePolicy|checksumPolicy)*>
+        <!ELEMENT enabled (#PCDATA)>
+        <!ELEMENT updatePolicy (#PCDATA)>
+        <!ELEMENT checksumPolicy (#PCDATA)>
+        <!ELEMENT snapshots (enabled|updatePolicy|checksumPolicy)*>
+        <!ELEMENT pluginRepositories (pluginRepository)*>
+        <!ELEMENT pluginRepository (id|name|url|releases|snapshots)*>
+        <!ELEMENT activeProfiles (activeProfile)*>
+        <!ELEMENT activeProfile (#PCDATA)>
+        ]>
+<!--<settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <mirrors>
+   &lt;!&ndash; <mirrors>
         <mirror>
             <id>artifactory</id>
             <name>Artifactory</name>
             <url>https://repo1.uhc.com/artifactory/repo</url>
             <mirrorOf>*</mirrorOf>
+        </mirror>
+    </mirrors>&ndash;&gt;
+    <mirrors>
+        <mirror>
+            <id>central</id>
+            <mirrorOf>*</mirrorOf>
+            <url>https://repo1.maven.org/maven2/</url>
         </mirror>
     </mirrors>
 
@@ -117,4 +109,23 @@ under the License.
     <activeProfiles>
         <activeProfile>artifactory</activeProfile>
     </activeProfiles>
+</settings>-->
+<settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <mirrors>
+        <mirror>
+            <id>central</id>
+            <mirrorOf>*</mirrorOf>
+            <url>https://repo1.maven.org/maven2/</url>
+        </mirror>
+    </mirrors>
+
+    <!-- Removed the "artifactory" profile to prevent forced use of repo1.uhc.com -->
+
+    <activeProfiles>
+        <!-- Do not activate artifactory profile -->
+    </activeProfiles>
+
 </settings>

@@ -6,7 +6,12 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import reactor.netty.http.client.HttpClient;
 
@@ -16,21 +21,12 @@ import javax.net.ssl.SSLException;
 @Configuration
 public class WebClientConfig {
 
-    private final String employerAssociationServiceBaseUrl;
+    @Value("${bis.base-url}")
+    String baseUrl;
 
-    private final String employerServiceBaseUrl;
+    @Value("${bis.authorization-token}")
+    String authorizationToken;
 
-    public WebClientConfig(
-            @Value("${aggregate.base.url}") String employerAssociationServiceBaseUrl,
-            @Value("${base.url}") String employerServiceBaseUrl) {
-        this.employerAssociationServiceBaseUrl = employerAssociationServiceBaseUrl;
-        this.employerServiceBaseUrl = employerServiceBaseUrl;
-    }
-
-    /**
-     * Creates an SSL-enabled HttpClient.
-     * Uses an insecure trust manager for self-signed certificates (should be avoided in production).
-     */
     private HttpClient createSecureHttpClient() {
         return HttpClient.create()
                 .secure(
@@ -48,5 +44,19 @@ public class WebClientConfig {
                                 throw new RuntimeException(e);
                             }
                         });
+    }
+
+    private WebClient createWebClient(WebClient.Builder builder, String baseUrl) {
+        return builder.baseUrl(baseUrl)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authorizationToken)
+                .defaultHeader("X-Upstream-ENV", "dev")
+                .clientConnector(new ReactorClientHttpConnector(createSecureHttpClient()))
+                .build();
+    }
+
+    @Bean("employerWebClient")
+    public WebClient employerWebClient(WebClient.Builder builder) {
+        return createWebClient(builder, baseUrl);
     }
 }

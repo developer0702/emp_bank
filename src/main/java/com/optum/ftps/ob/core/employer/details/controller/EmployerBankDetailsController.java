@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class EmployerBankDetailsController implements EmployerBankDetailsApi {
+
     private final EmployerBankDetailsService employerBankDetailsService;
     private final EmployerBankDetailsValidator employerBankDetailsValidator;
     private final EmployerBankDetailsMapper employerBankDetailsMapper;
@@ -32,37 +34,46 @@ public class EmployerBankDetailsController implements EmployerBankDetailsApi {
     @Override
     public ResponseEntity<UpdateEmpBankDetailsResponse> updEmployerBankDetails(
             @Valid @RequestBody UpdateEmpBankDetailsRequest request) throws ValidationException {
+
         log.debug("Received request to update employer bank details: {}", request);
 
+        // Validate request
         Set<Integer> errors = employerBankDetailsValidator.validateEmployerBankDetails(request);
         if (!errors.isEmpty()) {
             log.error("Validation failed for update employer bank details request: {}", errors);
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest()
+                    .body(
+                            UpdateEmpBankDetailsResponse.builder()
+                                    .status("FAILURE")
+                                    .message("Validation failed: " + errors)
+                                    .build());
         }
 
-        var requestDTO = employerBankDetailsMapper.map(request);
-        var responseDTO = employerBankDetailsService.updateEmployerBankDetails(requestDTO);
-        var response = employerBankDetailsResponseMapper.map(responseDTO);
+        try {
+            // Mapping request
+            var requestDTO = employerBankDetailsMapper.map(request);
 
-        log.debug("Employer bank details updated: {}", responseDTO);
-        return ResponseEntity.ok(response);
-    }
+            // Calling service
+            var responseDTO = employerBankDetailsService.updateEmployerBankDetailsServ(requestDTO);
 
-    public ResponseEntity<UpdateEmpBankDetailsResponse> addEmployerBankAccountDetails(
-            @Valid @RequestBody UpdateEmpBankDetailsRequest request) {
-        log.debug("Received request to add employer bank account details: {}", request);
+            // Mapping response
+            var response = employerBankDetailsResponseMapper.map(responseDTO);
 
-        /*Set<String> errors = employerBankDetailsValidator.validateAddEmpBankDetails(request);
-        if (!errors.isEmpty()) {
-            log.error("Validation failed for add employer bank account details request: {}", errors);
-            return ResponseEntity.badRequest().build();
-        }*/
+            log.debug("Employer bank details updated successfully: {}", responseDTO);
+            return ResponseEntity.ok(response);
 
-        var requestDTO = employerBankDetailsMapper.map(request);
-        var responseDTO = employerBankDetailsService.addEmployerBankDetails(requestDTO);
-        var response = employerBankDetailsResponseMapper.map(responseDTO);
-
-        // log.debug("Employer bank account details added: {}", responseDTO);
-        return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error(
+                    "Unexpected error occurred while updating employer bank details: {}",
+                    e.getMessage(),
+                    e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(
+                            UpdateEmpBankDetailsResponse.builder()
+                                    .status("FAILURE")
+                                    .message(
+                                            "An unexpected error occurred. Please try again later.")
+                                    .build());
+        }
     }
 }

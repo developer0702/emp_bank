@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class BankAccountResponseDTO {
-    private int data;
-    private String status;
-    private List<ErrorDTO> errors;
+    private List<BankAccountDTO> data;
+       private String status;
+//    private List<ErrorDTO> errors;
 }

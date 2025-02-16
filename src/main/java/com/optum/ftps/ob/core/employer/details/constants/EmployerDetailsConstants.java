@@ -6,13 +6,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EmployerDetailsConstants {
 
-    public static final int EMPLOYER_GROUPNUMBER_LENGTH = 9;
+    public static final int EMPLOYER_GROUPNUMBER_LENGTH = 11;
     public static final int EMPLOYER_GROUPNAME_LENGTH = 40;
 
     public static final int BNK_REQUESTID_LENGTH = 36;
     public static final int BNK_REQ_USERID_LENGTH = 30;
     public static final int BNK_SRC_SYS_ID_LENGTH = 10;
-    public static final int EMP_GROUP_ID_LENGTH = 9;
+    public static final int EMP_GROUP_ID_LENGTH = 12;
     public static final int BNK_RTR_NO_LENGTH = 9;
     public static final int BNK_ACCT_NO_LENGTH = 17;
     public static final int BNK_NAME_LENGTH = 40;

@@ -1,6 +1,7 @@
 package com.optum.ftps.ob.core.employer.details.dtos;
 
 import jakarta.validation.constraints.NotBlank;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,10 +17,10 @@ public class UpdateEmpBankDetailsDTO {
     @NotBlank(message = "Employer Bank Sequence Number is required")
     private String employerBankSeqNum;
 
-    private String employerAccNum;         // Nullable
-    private String employerRoutingNum;     // Nullable
-    private String employerBankName;       // Nullable
-    private String employerAccNickName;    // Nullable
-    private String employerAccStatCode;    // Nullable
-    private String employerAccOperation;   // Nullable
+    private String employerAccNum; // Nullable
+    private String employerRoutingNum; // Nullable
+    private String employerBankName; // Nullable
+    private String employerAccNickName; // Nullable
+    private String employerAccStatCode; // Nullable
+    private String employerAccOperation; // Nullable
 }

@@ -2,116 +2,167 @@ package com.optum.ftps.ob.core.employer.details.helper;
 
 import com.optum.ftps.ob.core.employer.details.dtos.bankaccount.BankAccountDTO;
 import com.optum.ftps.ob.core.employer.details.dtos.bankaccount.BankAccountResponseDTO;
-import com.optum.ftps.ob.core.employer.details.dtos.bankaccount.EmployeeIdSearchResponseDTO;
-import com.optum.ftps.ob.core.employer.details.dtos.bankaccount.EmployerIdSearchDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
-@Service
-@RequiredArgsConstructor
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class BankAccountHelper {
 
-    private static final String EMPLOYER_ID_SEARCH = "/association/search";
-    private static final String ADD_BANK_ACCOUNT_API = "/api/v1/employer/{employerId}/bank-account";
-    private static final String GET_SPECIFIC_BANK_ACCOUNT_API =
-            "/api/v1/employer/{employerId}/bank-account/{id}";
-    private static final String UPDATE_SPECIFIC_BANK_ACCOUNT_API =
-            "/api/v1/employer/{employerId}/bank-account/{id}";
+    private static final String GET_BANK_ACCOUNT_BY_GROUP_ID =
+            "/employer/{employerGroupId}/bank-account";
+    private static final String GET_BANK_ACCOUNT_BY_EMPLOYER_AND_BANK_ID =
+            "/employer/{employerId}/bank-account/{bankId}";
+    private static final String UPDATE_BANK_ACCOUNT =
+            "/employer/{employerGroupId}/bank-account/{bankId}";
 
-    private final RestTemplate restTemplate;
+    private final WebClient employerWebClient;
 
-    //    private final WebClient webClient;
-    @Value("${aggregate.base.url}")
-    private String aggregateBaseUrl;
-
-    @Value("${base.url}")
-    private String baseUrl;
-
-    //    public BankAccountHelper(WebClient webClient) {
-    //        this.webClient = webClient;
-    //    }
-
-    public EmployeeIdSearchResponseDTO getAggregatorServiceResponse(
-            EmployerIdSearchDTO employerIdSearchDTO) {
-
-        String url = aggregateBaseUrl + EMPLOYER_ID_SEARCH;
-
-        return restTemplate.postForObject(
-                url, employerIdSearchDTO, EmployeeIdSearchResponseDTO.class);
+    /**
+     * Fetches bank account details using Employer Group ID.
+     *
+     * @param employerGroupId the Employer Group ID
+     * @return Optional of BankAccountResponseDTO
+     */
+    public Optional<BankAccountResponseDTO> getBankDetailsByGroupId(String employerGroupId) {
+        try {
+            return employerWebClient
+                    .get()
+                    .uri(
+                            uriBuilder ->
+                                    uriBuilder
+                                            .path(GET_BANK_ACCOUNT_BY_GROUP_ID)
+                                            .build(employerGroupId))
+                    .retrieve()
+                    .bodyToMono(BankAccountResponseDTO.class)
+                    .blockOptional();
+        } catch (Exception e) {
+            log.error(
+                    "Error fetching bank details for Group ID: {} - {}",
+                    employerGroupId,
+                    e.getMessage(),
+                    e);
+            return Optional.empty();
+        }
     }
 
-    public BankAccountResponseDTO addBankAccountResponse(
-            BankAccountDTO bankAccountDTO, int employeeId) {
-
-        String bankAccountUrl = baseUrl + ADD_BANK_ACCOUNT_API;
-        Map<String, Integer> uriVariable = new HashMap<>();
-        uriVariable.put("employerId ", employeeId);
-        return restTemplate.postForObject(
-                bankAccountUrl, bankAccountDTO, BankAccountResponseDTO.class, uriVariable);
+    /**
+     * Updates the bank account details.
+     *
+     * @param employerGroupId Employer Group ID
+     * @param bankAccountDTO  Bank account details to update
+     * @return Optional of updated BankAccountResponseDTO
+     */
+    public Optional<BankAccountResponseDTO> updateBankAccount(
+            String employerGroupId, BankAccountDTO bankAccountDTO) {
+        try {
+            return employerWebClient
+                    .post()
+                    .uri(
+                            uriBuilder ->
+                                    uriBuilder
+                                            .path(UPDATE_BANK_ACCOUNT)
+                                            .build(employerGroupId, bankAccountDTO.getBankId()))
+                    .bodyValue(bankAccountDTO)
+                    .retrieve()
+                    .bodyToMono(BankAccountResponseDTO.class)
+                    .blockOptional();
+        } catch (Exception e) {
+            log.error(
+                    "Error updating bank account for Group ID: {} - {}",
+                    employerGroupId,
+                    e.getMessage(),
+                    e);
+            return Optional.empty();
+        }
     }
 
-    public BankAccountDTO getBankAccountInfoFromBankService(int employeeId, int data) {
-
-        String url = baseUrl + GET_SPECIFIC_BANK_ACCOUNT_API;
-
-        Map<String, Integer> uriVariable = new HashMap<>();
-        uriVariable.put("employerId", employeeId);
-        uriVariable.put("id", data);
-        return restTemplate.getForObject(url, BankAccountDTO.class, uriVariable);
+    /**
+     * Fetches bank account details using Employer ID and Bank ID.
+     *
+     * @param employerId Employer ID
+     * @param bankId     Bank ID
+     * @return Optional of BankAccountDTO
+     */
+    public Optional<BankAccountDTO> getBankDetailsByEmployerAndBankId(
+            String employerId, String bankId) {
+        try {
+            return employerWebClient
+                    .get()
+                    .uri(
+                            uriBuilder ->
+                                    uriBuilder
+                                            .path(GET_BANK_ACCOUNT_BY_EMPLOYER_AND_BANK_ID)
+                                            .build(employerId, bankId))
+                    .retrieve()
+                    .bodyToMono(BankAccountDTO.class)
+                    .blockOptional();
+        } catch (Exception e) {
+            log.error(
+                    "Error fetching updated bank details for Employer ID: {}, Bank ID: {} - {}",
+                    employerId,
+                    bankId,
+                    e.getMessage(),
+                    e);
+            return Optional.empty();
+        }
     }
 
-    public BankAccountResponseDTO updateBankAccountResponse(
-            BankAccountDTO bankAccountDTO, int employerId, int bankAccountId) {
-
-        String bankAccountUrl = baseUrl + UPDATE_SPECIFIC_BANK_ACCOUNT_API;
-        Map<String, Integer> uriVariable = new HashMap<>();
-        uriVariable.put("employerId ", employerId);
-        uriVariable.put("id ", bankAccountId);
-        return restTemplate.postForObject(
-                bankAccountUrl, bankAccountDTO, BankAccountResponseDTO.class, uriVariable);
+    /**
+     * Updates the bank account details only if a matching account is found.
+     *
+     * @param employerGroupId Employer Group ID
+     * @param bankAccountDTO  Bank account details to check and update
+     * @return Optional of updated BankAccountResponseDTO
+     */
+    public Optional<BankAccountResponseDTO> updateBankAccountIfMatched(
+            String employerGroupId, BankAccountDTO bankAccountDTO) {
+        try {
+            return getBankDetailsByGroupId(employerGroupId)
+                    .flatMap(
+                            bankAccountResponse ->
+                                    bankAccountResponse.getData().stream()
+                                            .filter(
+                                                    existingBankAccount ->
+                                                            existingBankAccount
+                                                                    .getAccountNumber()
+                                                                    .equals(
+                                                                            bankAccountDTO
+                                                                                    .getAccountNumber()))
+                                            .findFirst()
+                                            .map(
+                                                    matchingBankAccount -> {
+                                                        log.info(
+                                                                "Match found for Account Number: {}"
+                                                                    + " and Bank ID: {}. Updating"
+                                                                    + " bank account...",
+                                                                bankAccountDTO.getAccountNumber(),
+                                                                bankAccountDTO.getBankId());
+                                                        return updateBankAccount(
+                                                                employerGroupId, bankAccountDTO);
+                                                    }))
+                    .orElseGet(
+                            () -> {
+                                log.warn(
+                                        "No matching bank account found for Group ID: {}. Update"
+                                                + " skipped.",
+                                        employerGroupId);
+                                return Optional.empty();
+                            });
+        } catch (Exception e) {
+            log.error(
+                    "Error while updating bank account for Group ID: {} - {}",
+                    employerGroupId,
+                    e.getMessage(),
+                    e);
+            return Optional.empty();
+        }
     }
-
-    //    public void sendPostRequest() {
-    //        String url =
-    // "https://api-stg.uhg.com/api/financial/banking/core-banking-bis-employer-service/1.0.0/employer/1/bank-account/4";
-    //        String token =
-    // "eyJraWQiOiJHakJ2c2NVZlZ5dlF4dWhuazVRNllwUnZLSkxBS05BYUJjREtTSVlwd3hVIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJodHRwczovL2FwaS51aGcuY29tIiwic3ViIjoiODEzOTE4MDktM2E2OC00YTlhLTkxMzYtODQyMGJlN2RlYzdhIiwiYXpwIjoiODEzOTE4MDktM2E2OC00YTlhLTkxMzYtODQyMGJlN2RlYzdhIiwic2NvcGUiOiJodHRwczovL2FwaS51aGcuY29tLy5kZWZhdWx0IiwiaXNzIjoiaHR0cHM6Ly9ub25wcm9kLmlkZW50aXR5LnVoZy5jb20iLCJ0eXAiOiJCZWFyZXIiLCJvaWQiOiI4MTM5MTgwOS0zYTY4LTRhOWEtOTEzNi04NDIwYmU3ZGVjN2EiLCJleHAiOjE3MzkxODcxNTMsImlhdCI6MTczOTE4MzU1MywianRpIjoiM2M3ZDFhMzMtNDc0Ni00ZGYyLWFlZTAtZTE1Mzc3NWU4YWMwIn0.JlRy6B5jOB7d4z_ghx7mJRVJ5WcaJw88lIAck3xNhzaQVvkXOoAw3G66zm-spA2wTJg_8O6euCWSY-0wLckIMcq9eTOD16js4Gzdfhn5XePoGcTme9dmnWeaE90imVuDmsBdNj-DX1H-jlODd0OJcWPC2tLshZYFC4-11UOXeK37PKU3rRRTlFu6NGdY_4nInkpw1dqKKOl6Fi4BiNi3d0IJUNhxMzjbxmLU8zsXIRvVnGUERGcIs8RuMrioOLAyXCdOuVXZco0OZ7-Hmu_-wMSJSAc0Xk94t2NYexKnxSuY-0IyVfla5LkYi4iyB9tpb6-5U47lxvNoddaaItu5lQ";
-    //
-    //        String requestBody = "{\n" +
-    //                "  \"source\": \"EUREKA\",\n" +
-    //                "  \"correlationId\": \"STRING\",\n" +
-    //                "  \"usage\": \"HSA_FUNDING\",\n" +
-    //                "  \"bankName\": \"SBI\",\n" +
-    //                "  \"routingNumber\": \"223456789\",\n" +
-    //                "  \"accountNumber\": \"787654321\",\n" +
-    //                "  \"accountType\": \"C\",\n" +
-    //                "  \"nickName\": \"hdfc bank\",\n" +
-    //                "  \"accountStatus\": \"ACTIVE\"\n" +
-    //                "}";
-    //
-    //        try {
-    //            String response = webClient.post()
-    //                    .uri(url)
-    //                    .header("X-Upstream-ENV", "dev")
-    //                    .header("Content-Type", "application/json")
-    //                    .header("Authorization", "Bearer " + token)
-    //                    .bodyValue(requestBody)
-    //                    .retrieve()
-    //                    .bodyToMono(String.class)
-    //                    .block();
-    //
-    //            log.info("Response: {}", response);
-    //        } catch (WebClientResponseException e) {
-    //            log.error("Error in sendPostRequest: {}", e.getMessage());
-    //        }
-    //    }
 }
