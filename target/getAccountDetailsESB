@@ -1,0 +1,12 @@
+
+localhost:8080/getAccountDetailsESB
+
+{
+    "id": "730061B",
+    "requestType": "ACTBYEMP",
+    "versionNumber": "01",
+    "requestId": "123",
+    "limitResultPage": 20000,
+    "limitResultSize": 30000
+
+}
