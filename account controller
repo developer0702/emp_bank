@@ -1,0 +1,57 @@
+package com.optum.ftps.ob.core.account.details.controller;
+
+import com.optum.ftps.ob.core.account.details.api.v1.AccountDetailsApi;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountDetailsESBResponse;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountDetailsRequest;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountDetailsResponse;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountsByMemberIDRequest;
+import com.optum.ftps.ob.core.account.details.service.AccountDetailsByMemberIdService;
+import com.optum.ftps.ob.core.account.details.service.AccountDetailsEsbService;
+import com.optum.ftps.ob.core.account.details.validator.AccountByMemberIdValidator;
+import com.optum.ftps.ob.core.account.details.validator.AccountDetailsEsbValidator;
+
+import jakarta.validation.Valid;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController
+@RequiredArgsConstructor
+public class AccountDetailsController implements AccountDetailsApi {
+
+    private final AccountDetailsByMemberIdService accountDetailsByMemberIdService;
+    private final AccountDetailsEsbService accountDetailsEsbService;
+    private final AccountByMemberIdValidator accountByMemberIdValidator;
+    private final AccountDetailsEsbValidator accountDetailsEsbValidator;
+
+    @Override
+    public ResponseEntity<AccountDetailsResponse> getAccountDetailsByMemberId(
+            @Valid @RequestBody AccountsByMemberIDRequest request) {
+        log.info("getAccountDetailsByMemberId: request={}", request);
+        accountByMemberIdValidator.validate(request);
+        if (accountDetailsByMemberIdService.getAccountDetailsByMemberId(request) != null) {
+            return new ResponseEntity<>(
+                    accountDetailsByMemberIdService.getAccountDetailsByMemberId(request),
+                    HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    public ResponseEntity<AccountDetailsESBResponse> getAccountDetails(
+            @Valid @RequestBody AccountDetailsRequest request) {
+        log.info("getAccountDetails: request={}", request);
+        accountDetailsEsbValidator.validate(request);
+        if (accountDetailsEsbService.getAccountDetails(request) != null) {
+            return new ResponseEntity<>(
+                    accountDetailsEsbService.getAccountDetails(request), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+}
