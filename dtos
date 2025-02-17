@@ -1,0 +1,50 @@
+package com.optum.ftps.ob.core.account.details.dto.esb;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class AccountDetailsEsbDto implements Serializable {
+
+    private String branchId;
+
+    private String planId;
+
+    private String payerName;
+
+    private String employerId;
+
+    private String requestType;
+
+    private String versionNumber;
+
+    private String requestId;
+
+    private long resultPage;
+
+    private long resultSize;
+
+    private long maxRecords;
+
+    private List<AccountInfoDto> accounts;
+
+    // Code added for ANF report
+    private List<AccountInfoDto> enrlGoodRec;
+    private List<AccountInfoDto> enrlErrorRec;
+    private Set<String> goodRec;
+    private Set<String> errorRec;
+
+    // Code added for duplicate SSN
+    private String argSocialSecNbr;
+}
