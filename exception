@@ -1,11 +1,63 @@
-14:39:37.624 [http-nio-8080-exec-6] ERROR c.o.f.o.c.e.d.h.BankAccountHelper - Error fetching bank details for Group ID: TST_EMP1001 - 401 Unauthorized from GET https://api-stg.uhg.com/api/financial/banking/core-banking-bis-employer-service/1.0.0/employer/TST_EMP1001/bank-account
-org.springframework.web.reactive.function.client.WebClientResponseException$Unauthorized: 401 Unauthorized from GET https://api-stg.uhg.com/api/financial/banking/core-banking-bis-employer-service/1.0.0/employer/TST_EMP1001/bank-account
-	at org.springframework.web.reactive.function.client.WebClientResponseException.create(WebClientResponseException.java:322)
-	Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException: 
-Error has been observed at the following site(s):
-	*__checkpoint ⇢ 401 UNAUTHORIZED from GET https://api-stg.uhg.com/api/financial/banking/core-banking-bis-employer-service/1.0.0/employer/TST_EMP1001/bank-account [DefaultWebClient]
-Original Stack Trace:
-		at org.springframework.web.reactive.function.client.WebClientResponseException.create(WebClientResponseException.java:322)
-		at org.springframework.web.reactive.function.client.DefaultClientResponse.lambda$createException$1(DefaultClientResponse.java:214)
-		at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:106)
-		
+Request:
+
+{
+  "id": "730061B",
+  "requestType": "ACTBYEMP",
+  "versionNumber": "01",
+  "requestId": "123",
+  "limitResult": {
+    "resultPage": 0,
+    "resultSize": 0
+  }
+}
+
+Response:
+{
+    "requestId": "123",
+    "status": {
+        "statusCode": "0000",
+        "severity": "INF",
+        "statusDescription": "requestSuccessfullyProcessed"
+    }, //may be will get it from code if SRVice_message_type
+    "responseDetails": {
+        "branchId": "003",
+        "planId": "061",
+        "employerAccounts": [
+            {
+                "employerGroupId": "730061B",
+                "participantDetails": [
+                    {
+                        "firstName": "JOYCE",
+                        "middleInitial": "",
+                        "lastName": "GRANT",
+                        "socialSecurityNumber": "251110091",
+                        "accountNumber": "405981141",
+                        "accountOpenDate": "2025-01-29T12:07:41.202+00:00",
+                        "effectiveTermDate": "2025-01-29T12:07:41.202+00:00",
+                        "routingNumber": "124384877",
+                        "employerName": "AGFA MATERIALS",
+                        "participantStatus": {
+                            "code": "A",
+                            "codeName": "ACTIVE"
+                        }
+                    },
+                    {
+                        "firstName": "WOJCIECH",
+                        "middleInitial": "",
+                        "lastName": "BALCEWICZ",
+                        "socialSecurityNumber": "105460244",
+                        "accountNumber": "404743908",
+                        "accountOpenDate": "2025-01-29T12:07:41.202+00:00",
+                        "effectiveTermDate": "2025-01-29T12:07:41.202+00:00",
+                        "routingNumber": "124384877",
+                        "employerName": "AGFA MATERIALS",
+                        "participantStatus": {
+                            "code": "A",
+                            "codeName": "ACTIVE"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
