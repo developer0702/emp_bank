@@ -1,0 +1,450 @@
+package com.optum.ftps.ob.core.account.details.service.impl;
+
+import com.optum.ftps.ob.core.account.details.constants.AccountDetailsEsbConstants;
+import com.optum.ftps.ob.core.account.details.dto.esb.AccountDetailsEsbDto;
+import com.optum.ftps.ob.core.account.details.dto.esb.AccountInfoDto;
+import com.optum.ftps.ob.core.account.details.helper.AccountDetailsEsbHelper;
+import com.optum.ftps.ob.core.account.details.helper.PageSet;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountDetailsESBResponse;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountDetailsRequest;
+import com.optum.ftps.ob.core.account.details.model.v1.EmployerAccountsType;
+import com.optum.ftps.ob.core.account.details.model.v1.ParticipantDetailsType;
+import com.optum.ftps.ob.core.account.details.model.v1.ParticipantStatusType;
+import com.optum.ftps.ob.core.account.details.model.v1.ResponseDetailsType;
+import com.optum.ftps.ob.core.account.details.model.v1.StatusType;
+import com.optum.ftps.ob.core.account.details.repository.AccountDetailsEsbRepository;
+import com.optum.ftps.ob.core.account.details.service.AccountDetailsEsbService;
+import com.optum.ftps.ob.core.account.details.util.StringUtil;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Service
+@RequiredArgsConstructor
+public class AccountDetailsEsbServiceImpl implements AccountDetailsEsbService {
+
+    private final AccountDetailsEsbRepository accountDetailsEsbRepository;
+
+    public static AccountDetailsESBResponse buildAccountDetailsResponse(
+            AccountDetailsEsbDto accountDetails) {
+
+        AccountDetailsESBResponse accountDetailsESBResponse = new AccountDetailsESBResponse();
+        accountDetailsESBResponse.setRequestId(accountDetails.getRequestId());
+
+        StatusType accountStatus =
+                buildStatusBean(
+                        AccountDetailsEsbConstants
+                                .REQUEST_SUCCESSFULLY_PROCESSED); // 9	REQUEST SUCCESSFULLY
+        // PROCESSED	0000
+        accountDetailsESBResponse.setStatus(accountStatus);
+
+        ResponseDetailsType responseDetailType = new ResponseDetailsType();
+        responseDetailType.setBranchId(accountDetails.getBranchId());
+        responseDetailType.setPlanId(accountDetails.getPlanId());
+
+        // code added for ANF report
+        List<ParticipantDetailsType> respAccountDtlsGoodRec = null;
+        List<ParticipantDetailsType> respAccountDtlsErrRec = null;
+        List<ParticipantDetailsType> respAccountDtlsClosedRec = null;
+        List<AccountInfoDto> accounts = accountDetails.getAccounts();
+        List<EmployerAccountsType> empAccountBeans = new ArrayList<>();
+        Set<String> accountHolder = new HashSet<>();
+        String[] prvEmpGrpNbr = {""};
+        final EmployerAccountsType[] employerAccountType = {null};
+        int acctsSize = 0;
+        final List<ParticipantDetailsType>[] partcpDetails = new List[] {new ArrayList<>()};
+        if (accounts != null) {
+            int acctsRecSize = Math.min(accounts.size(), (int) accountDetails.getResultSize());
+
+            accounts.stream()
+                    .limit(acctsRecSize)
+                    .filter(
+                            accountInfoTO ->
+                                    "A".equalsIgnoreCase(accountInfoTO.getAcctStatuscode()))
+                    .forEach(
+                            accountInfoTO -> {
+                                accountHolder.add(accountInfoTO.getSocialSecurityNumber());
+                                String empGrpNbr = accountInfoTO.getEmployerGroupId();
+
+                                if (empGrpNbr != null && !empGrpNbr.equals(prvEmpGrpNbr[0])) {
+                                    if (!StringUtil.isEmpty(prvEmpGrpNbr[0])) {
+                                        employerAccountType[0].setParticipantDetails(
+                                                new ArrayList<>(partcpDetails[0]));
+                                    }
+                                    employerAccountType[0] = new EmployerAccountsType();
+                                    empAccountBeans.add(employerAccountType[0]);
+                                    employerAccountType[0].setEmployerGroupId(empGrpNbr);
+                                    partcpDetails[0] = new ArrayList<>();
+                                }
+                                ParticipantDetailsType participantType =
+                                        getParticipantDetailsType(accountInfoTO);
+
+                                partcpDetails[0].add(participantType);
+                                prvEmpGrpNbr[0] = empGrpNbr;
+                            });
+        }
+
+        getResponse(
+                accountDetails,
+                empAccountBeans,
+                accountHolder,
+                partcpDetails,
+                employerAccountType,
+                responseDetailType,
+                accountDetailsESBResponse);
+
+        long pageSize = accountDetails.getResultSize();
+        // Builds the account status code as 'result truncated additional record
+        // exists', if there are more rows returned from db than requested.
+        if (pageSize < acctsSize) {
+            accountStatus =
+                    buildStatusBean(
+                            AccountDetailsEsbConstants
+                                    .RESULT_TRUNCATED_ADDITIONAL_RECORDS_EXIST); // 34	RESULT
+            // TRUNCATED
+            // ADDITIONAL
+            // RECORDS EXIST
+            //	0000
+            accountDetailsESBResponse.setStatus(accountStatus);
+        }
+        return accountDetailsESBResponse;
+    }
+
+    private static ParticipantDetailsType getParticipantDetailsType(AccountInfoDto accountInfoTO) {
+        ParticipantDetailsType participantType = new ParticipantDetailsType();
+        participantType.setAccountNumber(accountInfoTO.getAccountNumber());
+        participantType.setAccountOpenDate(accountInfoTO.getAccountOpenDate());
+        participantType.setEffectiveTermDate(accountInfoTO.getEffectiveTermDate());
+        participantType.setFirstName(accountInfoTO.getFirstName());
+        participantType.setMiddleInitial(accountInfoTO.getMiddleInitial());
+        participantType.setLastName(
+                accountInfoTO.getLastName() == null
+                        ? AccountDetailsEsbConstants.NULL_STRING
+                        : accountInfoTO.getLastName());
+        participantType.setSocialSecurityNumber(accountInfoTO.getSocialSecurityNumber());
+
+        String statusCode = AccountDetailsEsbConstants.ACCOUNT_STATUS_CODE_ACTIVE;
+        String statusDesc = AccountDetailsEsbConstants.ACCOUNT_ACTIVE_STATUS_DESCRIPTION;
+        ParticipantStatusType statusType = new ParticipantStatusType();
+        statusType.setCode(statusCode);
+        statusType.setCodeName(statusDesc);
+        participantType.setParticipantStatus(statusType);
+        participantType.setRoutingNumber(accountInfoTO.getRoutingNumber());
+        participantType.setEmployerName(accountInfoTO.getEmployerName());
+
+        return participantType;
+    }
+
+    private static List<ParticipantDetailsType> buildResponseAccountsDetailClosedRec(
+            AccountDetailsEsbDto accountDetails, Set<String> accountHolder) {
+
+        List<AccountInfoDto> anfClosedRec = accountDetails.getAccounts();
+        Set<String> goodRec = accountDetails.getGoodRec();
+        Set<String> errorRec = accountDetails.getErrorRec();
+        List<ParticipantDetailsType> partcpClosedDetails = new ArrayList<>();
+        List<EmployerAccountsType> empAccountBeans = new ArrayList<>();
+        String[] prvEmpGrpNbr = {""};
+        EmployerAccountsType[] employerAccountType = {null};
+
+        if (anfClosedRec != null) {
+            anfClosedRec.stream()
+                    .filter(
+                            accountInfoDto ->
+                                    "C".equalsIgnoreCase(accountInfoDto.getAcctStatuscode()))
+                    .filter(
+                            accountInfoDto ->
+                                    !accountHolder.contains(
+                                            accountInfoDto.getSocialSecurityNumber())
+                                            && !goodRec.contains(
+                                            accountInfoDto.getSocialSecurityNumber())
+                                            && !errorRec.contains(
+                                            accountInfoDto.getSocialSecurityNumber()))
+                    .forEach(
+                            accountInfoDto -> {
+                                String empGrpNbr = accountInfoDto.getEmployerGroupId();
+
+                                if (empGrpNbr != null && !empGrpNbr.equals(prvEmpGrpNbr[0])) {
+                                    if (!StringUtil.isEmpty(prvEmpGrpNbr[0])) {
+                                        employerAccountType[0].setParticipantDetails(
+                                                new ArrayList<>(partcpClosedDetails));
+                                    }
+                                    employerAccountType[0] = new EmployerAccountsType();
+                                    empAccountBeans.add(employerAccountType[0]);
+                                    employerAccountType[0].setEmployerGroupId(empGrpNbr);
+                                    partcpClosedDetails.clear();
+                                }
+
+                                ParticipantDetailsType participantType =
+                                        getParticipantDetailsTypeClosedRec(accountInfoDto);
+                                partcpClosedDetails.add(participantType);
+                                prvEmpGrpNbr[0] = empGrpNbr;
+                            });
+        }
+        return partcpClosedDetails;
+    }
+
+    private static List<ParticipantDetailsType> buildResponseAccountsDetailGoodRec(
+            AccountDetailsEsbDto accountDetails, Set<String> accountHolder) {
+
+        var anfGoodRec = accountDetails.getEnrlGoodRec();
+        var goodRec = new HashSet<String>();
+        var empAccountBeans = new ArrayList<EmployerAccountsType>();
+        var prvEmpGrpNbr = new String[] {""};
+        var partcpGoodDetails = new ArrayList<ParticipantDetailsType>();
+        var employerAccountType = new EmployerAccountsType[] {null};
+
+        if (anfGoodRec != null) {
+            anfGoodRec.stream()
+                    .filter(
+                            accountInfoDto ->
+                                    !accountHolder.contains(
+                                            accountInfoDto.getSocialSecurityNumber()))
+                    .forEach(
+                            accountInfoDto -> {
+                                goodRec.add(accountInfoDto.getSocialSecurityNumber());
+                                var empGrpNbr = accountInfoDto.getEmployerGroupId();
+
+                                if (empGrpNbr != null && !empGrpNbr.equals(prvEmpGrpNbr[0])) {
+                                    if (!StringUtil.isEmpty(prvEmpGrpNbr[0])) {
+                                        employerAccountType[0].setParticipantDetails(
+                                                List.copyOf(partcpGoodDetails));
+                                    }
+                                    employerAccountType[0] = new EmployerAccountsType();
+                                    empAccountBeans.add(employerAccountType[0]);
+                                    employerAccountType[0].setEmployerGroupId(empGrpNbr);
+                                    partcpGoodDetails.clear();
+                                }
+
+                                var participantType =
+                                        getParticipantDetailsTypeGoodRec(accountInfoDto);
+
+                                partcpGoodDetails.add(participantType);
+                                prvEmpGrpNbr[0] = empGrpNbr;
+                            });
+        }
+        accountDetails.setGoodRec(goodRec);
+        return partcpGoodDetails;
+    }
+
+    private static List<ParticipantDetailsType> buildResponseAccountsDetailErrRec(
+            AccountDetailsEsbDto accountDetails, Set<String> accountHolder) {
+        var anfErrRec = accountDetails.getEnrlErrorRec();
+        var errorRec = new HashSet<String>();
+        var goodRec = accountDetails.getGoodRec();
+        List<ParticipantDetailsType> partcpErrDetails = new ArrayList<>();
+        List<EmployerAccountsType> empAccountBeans = new ArrayList<>();
+        String[] prvEmpGrpNbr = {""};
+        EmployerAccountsType[] employerAccountType = {null};
+
+        if (anfErrRec != null) {
+            anfErrRec.stream()
+                    .filter(
+                            accountInfoDto ->
+                                    !accountHolder.contains(
+                                            accountInfoDto.getSocialSecurityNumber())
+                                            && !goodRec.contains(
+                                            accountInfoDto.getSocialSecurityNumber()))
+                    .forEach(
+                            accountInfoDto -> {
+                                errorRec.add(accountInfoDto.getSocialSecurityNumber());
+                                String empGrpNbr = accountInfoDto.getEmployerGroupId();
+
+                                if (empGrpNbr != null && !empGrpNbr.equals(prvEmpGrpNbr[0])) {
+                                    if (!StringUtil.isEmpty(prvEmpGrpNbr[0])) {
+                                        employerAccountType[0].setParticipantDetails(
+                                                new ArrayList<>(partcpErrDetails));
+                                    }
+                                    employerAccountType[0] = new EmployerAccountsType();
+                                    empAccountBeans.add(employerAccountType[0]);
+                                    employerAccountType[0].setEmployerGroupId(empGrpNbr);
+                                    partcpErrDetails.clear();
+                                }
+
+                                ParticipantDetailsType participantType =
+                                        getParticipantDetailsTypeError(accountInfoDto);
+                                partcpErrDetails.add(participantType);
+                                prvEmpGrpNbr[0] = empGrpNbr;
+                            });
+        }
+        accountDetails.setErrorRec(errorRec);
+        return partcpErrDetails;
+    }
+
+    private static StatusType buildStatusBean(int statusCode) {
+        // Status code is used for fetching data from DB
+        StatusType status = new StatusType();
+        status.setStatusCode(AccountDetailsEsbConstants.STATUS_CODE_SUCCESS);
+        status.setStatusDescription("requestSuccessfullyProcessed");
+        status.setSeverity("INF");
+        return status;
+    }
+
+    private static ParticipantDetailsType getParticipantDetailsTypeError(
+            AccountInfoDto accountInfoDto) {
+        ParticipantDetailsType participantType = new ParticipantDetailsType();
+        participantType.setAccountNumber("");
+        participantType.setAccountOpenDate(null);
+        participantType.setEffectiveTermDate(null);
+        participantType.setFirstName(accountInfoDto.getFirstName());
+        participantType.setMiddleInitial(accountInfoDto.getMiddleInitial());
+        participantType.setLastName(
+                accountInfoDto.getLastName() == null
+                        ? AccountDetailsEsbConstants.NULL_STRING
+                        : accountInfoDto.getLastName());
+        participantType.setSocialSecurityNumber(accountInfoDto.getSocialSecurityNumber());
+
+        String statusCode = AccountDetailsEsbConstants.ACCOUNT_STATUS_CODE_TERMINATION;
+        String statusDesc = AccountDetailsEsbConstants.ACCOUNT_TERMINATE_STATUS_DESCRIPTION;
+        ParticipantStatusType statusType = new ParticipantStatusType();
+        statusType.setCode(statusCode);
+        statusType.setCodeName(statusDesc);
+        participantType.setParticipantStatus(statusType);
+        participantType.setRoutingNumber("");
+        participantType.setEmployerName(accountInfoDto.getEmployerName());
+
+        return participantType;
+    }
+
+    private static ParticipantDetailsType getParticipantDetailsTypeGoodRec(
+            AccountInfoDto accountInfoDto) {
+        var participantType = new ParticipantDetailsType();
+
+        participantType.setAccountNumber("");
+        participantType.setAccountOpenDate(null);
+        participantType.setEffectiveTermDate(null);
+        participantType.setFirstName(accountInfoDto.getFirstName());
+        participantType.setMiddleInitial(accountInfoDto.getMiddleInitial());
+        participantType.setLastName(
+                accountInfoDto.getLastName() == null
+                        ? AccountDetailsEsbConstants.NULL_STRING
+                        : accountInfoDto.getLastName());
+        participantType.setSocialSecurityNumber(accountInfoDto.getSocialSecurityNumber());
+        var statusType = new ParticipantStatusType();
+        statusType.setCode(AccountDetailsEsbConstants.ACCOUNT_STATUS_CODE_PENDING);
+        statusType.setCodeName(AccountDetailsEsbConstants.ACCOUNT_PENDING_STATUS_DESCRIPTION);
+        participantType.setParticipantStatus(statusType);
+        participantType.setRoutingNumber("");
+        participantType.setEmployerName(accountInfoDto.getEmployerName());
+        return participantType;
+    }
+
+    private static ParticipantDetailsType getParticipantDetailsTypeClosedRec(
+            AccountInfoDto accountInfoDto) {
+        ParticipantDetailsType participantType = new ParticipantDetailsType();
+        participantType.setAccountNumber(accountInfoDto.getAccountNumber());
+        participantType.setAccountOpenDate(accountInfoDto.getAccountOpenDate());
+        participantType.setEffectiveTermDate(accountInfoDto.getEffectiveTermDate());
+        participantType.setFirstName(accountInfoDto.getFirstName());
+        participantType.setMiddleInitial(accountInfoDto.getMiddleInitial());
+        participantType.setLastName(
+                accountInfoDto.getLastName() == null
+                        ? AccountDetailsEsbConstants.NULL_STRING
+                        : accountInfoDto.getLastName());
+        participantType.setSocialSecurityNumber(accountInfoDto.getSocialSecurityNumber());
+
+        String statusCode = AccountDetailsEsbConstants.ACCOUNT_STATUS_CODE_CLOSED;
+        String statusDesc = AccountDetailsEsbConstants.ACCOUNT_CLOSED_STATUS_DESCRIPTION;
+        ParticipantStatusType statusType = new ParticipantStatusType();
+        statusType.setCode(statusCode);
+        statusType.setCodeName(statusDesc);
+        participantType.setParticipantStatus(statusType);
+        participantType.setRoutingNumber(accountInfoDto.getRoutingNumber());
+        participantType.setEmployerName(accountInfoDto.getEmployerName());
+
+        return participantType;
+    }
+
+    private static void getGoodRecList(
+            List<ParticipantDetailsType> respAccountDtlsGoodRec,
+            List<ParticipantDetailsType>[] partcpDetails) {
+        if (respAccountDtlsGoodRec != null && !respAccountDtlsGoodRec.isEmpty()) {
+            partcpDetails[0].addAll(respAccountDtlsGoodRec);
+        }
+    }
+
+    private static void getErrorRecList(
+            List<ParticipantDetailsType> respAccountDtlsGoodRec,
+            List<ParticipantDetailsType>[] partcpDetails) {
+        if (respAccountDtlsGoodRec != null && !respAccountDtlsGoodRec.isEmpty()) {
+            partcpDetails[0].addAll(respAccountDtlsGoodRec);
+        }
+    }
+
+    private static void getClosedRecList(
+            List<ParticipantDetailsType> respAccountDtlsClosedRec,
+            List<ParticipantDetailsType>[] partcpDetails) {
+        if (respAccountDtlsClosedRec != null && !respAccountDtlsClosedRec.isEmpty()) {
+            partcpDetails[0].addAll(respAccountDtlsClosedRec);
+        }
+    }
+
+    private static void getResponse(
+            AccountDetailsEsbDto accountDetails,
+            List<EmployerAccountsType> empAccountBeans,
+            Set<String> accountHolder,
+            List<ParticipantDetailsType>[] partcpDetails,
+            EmployerAccountsType[] employerAccountType,
+            ResponseDetailsType responseDetailType,
+            AccountDetailsESBResponse accountDetailsESBResponse) {
+        List<ParticipantDetailsType> respAccountDtlsErrRec;
+        List<ParticipantDetailsType> respAccountDtlsGoodRec;
+        List<ParticipantDetailsType> respAccountDtlsClosedRec;
+        if (!empAccountBeans.isEmpty()) {
+            // Adds the participant type list of the last employer group in the
+            // above loop to the employer account type bean
+
+            // code added for ANF Report
+            respAccountDtlsGoodRec =
+                    buildResponseAccountsDetailGoodRec(accountDetails, accountHolder);
+            getGoodRecList(respAccountDtlsGoodRec, partcpDetails);
+            respAccountDtlsErrRec =
+                    buildResponseAccountsDetailErrRec(accountDetails, accountHolder);
+            getErrorRecList(respAccountDtlsErrRec, partcpDetails);
+            respAccountDtlsClosedRec =
+                    buildResponseAccountsDetailClosedRec(accountDetails, accountHolder);
+            getClosedRecList(respAccountDtlsClosedRec, partcpDetails);
+            employerAccountType[0].setParticipantDetails(new ArrayList<>(partcpDetails[0]));
+
+            responseDetailType.setEmployerAccounts(new ArrayList<>(empAccountBeans));
+            accountDetailsESBResponse.setResponseDetails(responseDetailType);
+        }
+    }
+
+    @Override
+    public AccountDetailsESBResponse getAccountDetails(
+            AccountDetailsRequest accountDetailsRequest) {
+        trimFields(accountDetailsRequest);
+        versionNumberBlank(accountDetailsRequest);
+        AccountDetailsEsbDto accountDetailsEsbDto =
+                AccountDetailsEsbHelper.buildAccountDetailsTO(accountDetailsRequest);
+        PageSet.getInstance().checkResultLimit(accountDetailsEsbDto);
+        if (AccountDetailsEsbConstants.ACCOUNT_DETAILS_BY_EMPLOYER.equalsIgnoreCase(
+                accountDetailsRequest.getRequestType())) {
+            // Gets the account details for the given employer
+            accountDetailsEsbDto =
+                    accountDetailsEsbRepository.getAccountDetails(accountDetailsEsbDto);
+        }
+        return buildAccountDetailsResponse(accountDetailsEsbDto);
+    }
+
+    private void trimFields(AccountDetailsRequest accountDetailsRequest) {
+        if (!StringUtil.isEmpty(accountDetailsRequest.getId())) {
+            accountDetailsRequest.setId(accountDetailsRequest.getId().trim());
+        }
+        if (!StringUtil.isEmpty(accountDetailsRequest.getRequestType())) {
+            accountDetailsRequest.setRequestType(accountDetailsRequest.getRequestType().trim());
+        }
+    }
+
+    private void versionNumberBlank(AccountDetailsRequest accountDetailsRequest) {
+        if (StringUtil.isEmpty(accountDetailsRequest.getVersionNumber())) {
+            accountDetailsRequest.setVersionNumber(AccountDetailsEsbConstants.ACCTESB_DEF_VER_NO);
+        }
+    }
+}
