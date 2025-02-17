@@ -1,0 +1,88 @@
+package com.optum.ftps.ob.core.employer.details.service;
+
+import com.optum.ftps.ob.core.employer.details.model.v1.*;
+import com.optum.ftps.ob.core.employer.details.repositories.AccountDetailsEsbRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class AccountDetailsEsbService {
+    private final AccountDetailsEsbRepository accountDetailsEsbRepository;
+
+    public AccountDetailsESBResponse getAccountDetails(AccountDetailsRequest request) {
+        log.info("Processing request to fetch account details.");
+
+        int totalRecords = 1500;  // Assuming a fixed total number of records
+        int pageSize = request.getLimitResultSize().intValue();
+        int startIndex = request.getLimitResultPage().intValue(); // Use directly as index
+
+        if (pageSize <= 0 || startIndex < 0) {
+            log.error("Invalid pagination parameters: startIndex={}, pageSize={}", startIndex, pageSize);
+            return AccountDetailsESBResponse.builder()
+                    .requestId(request.getRequestId())
+                    .status(EsbStatusDto.builder()
+                            .statusCode("0400")
+                            .severity("ERROR")
+                            .statusDescription("Invalid pagination parameters")
+                            .build())
+                    .hasMoreRecords(false)
+                    .build();
+        }
+
+        List<EmployerAccountDto> allAccounts = accountDetailsEsbRepository.fetchAllAccounts();
+        int availableRecords = allAccounts.size(); // Use actual list size, not a fixed number
+
+        if (startIndex >= availableRecords) {
+            log.warn("Requested page exceeds available data.");
+            return AccountDetailsESBResponse.builder()
+                    .requestId(request.getRequestId())
+                    .status(EsbStatusDto.builder()
+                            .statusCode("0404")
+                            .severity("WARN")
+                            .statusDescription("No more records available.")
+                            .build())
+                    .hasMoreRecords(false)
+                    .build();
+        }
+
+        int endIndex = Math.min(startIndex + pageSize, availableRecords);
+        List<EmployerAccountDto> accounts = allAccounts.subList(startIndex, endIndex);
+
+        boolean hasMoreRecords = endIndex < availableRecords;
+
+        if (accounts.isEmpty()) {
+            log.warn("No account details found for request: {}", request);
+            return AccountDetailsESBResponse.builder()
+                    .requestId(request.getRequestId())
+                    .status(EsbStatusDto.builder()
+                            .statusCode("0404")
+                            .severity("WARN")
+                            .statusDescription("No account details found")
+                            .build())
+                    .hasMoreRecords(false)
+                    .build();
+        }
+
+        return AccountDetailsESBResponse.builder()
+                .requestId(request.getRequestId())
+                .status(EsbStatusDto.builder()
+                        .statusCode("0000")
+                        .severity("INF")
+                        .statusDescription("Request Successfully Processed")
+                        .build())
+                .responseDetails(ResponseDetailsDto.builder()
+                        .branchId("003")
+                        .planId("061")
+                        .employerAccounts(accounts)
+                        .build())
+                .hasMoreRecords(hasMoreRecords)
+                .build();
+    }
+}
