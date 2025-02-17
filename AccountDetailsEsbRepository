@@ -1,0 +1,51 @@
+package com.optum.ftps.ob.core.employer.details.repositories;
+
+import com.optum.ftps.ob.core.employer.details.model.v1.EmployerAccountDto;
+import com.optum.ftps.ob.core.employer.details.model.v1.ParticipantDetailsDto;
+import com.optum.ftps.ob.core.employer.details.model.v1.ParticipantStatusDto;
+
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Repository
+public class AccountDetailsEsbRepository {
+    public List<EmployerAccountDto> fetchAllAccounts() {
+        List<EmployerAccountDto> accountInfoList = new ArrayList<>();
+
+        // Assuming you have a Date object:
+        Date date = new Date();
+
+        // Convert Date to LocalDate
+        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        for (int i = 0; i < 1500; i++) {
+            EmployerAccountDto employerAccount = new EmployerAccountDto();
+            employerAccount.setEmployerGroupId("730061B");
+            employerAccount.setParticipantDetails(
+                    List.of(
+                            ParticipantDetailsDto.builder()
+                                    .firstName("FirstName" + i)
+                                    .middleInitial("M")
+                                    .lastName("LastName" + i)
+                                    .socialSecurityNumber("222222222" + i)
+                                    .accountNumber("1103644521" + i)
+                                    .routingNumber("124384877")
+                                    .accountOpenDate(localDate)
+                                    .effectiveTermDate(localDate)
+                                    .employerName("EmployerName" + i)
+                                    .participantStatus(
+                                            ParticipantStatusDto.builder()
+                                                    .code("ACTIVE")
+                                                    .codeName("Active Status")
+                                                    .build())
+                                    .build()));
+            accountInfoList.add(employerAccount);
+        }
+        return accountInfoList;
+    }
+}
