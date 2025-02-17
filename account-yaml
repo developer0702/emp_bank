@@ -1,0 +1,263 @@
+---
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Account Details API
+  description: OpenAPI specification for AccountDetails APIs
+  termsOfService: https://changeme.optum.com/
+  contact:
+    name: Optum Financial OBI Team
+    email: Team_OBI@ds.uhc.com
+    url: https://www.optum.com/
+paths:
+  /getAccountDetails:
+    post:
+      operationId: getAccountDetailsByMemberId
+      summary: Get Account Details Summary
+      tags:
+      - AccountDetails
+      requestBody:
+        $ref: "#/components/requestBodies/AccountsByMemberIDRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/AccountDetailsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponse"
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+        default:
+          $ref: "#/components/responses/UnexpectedErrorResponse"
+  /getAccountDetailsESB:
+    post:
+      operationId: getAccountDetails
+      summary: Get Account Details ESB Details
+      tags:
+      - AccountDetails
+      requestBody:
+        $ref: "#/components/requestBodies/AccountDetailsRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/AccountDetailsESBResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponse"
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+        default:
+          $ref: "#/components/responses/UnexpectedErrorResponse"
+components:
+  requestBodies:
+    AccountsByMemberIDRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AccountsByMemberIDRequest"
+    AccountDetailsRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AccountDetailsRequest"
+  responses:
+    BadRequestErrorResponse:
+      description: Invalid element on request.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFoundErrorResponse:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ServerErrorResponse:
+      description: Server failed to process the request.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    UnexpectedErrorResponse:
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    AccountDetailsResponse:
+      description: Valid response upon successful summary retrieval.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AccountDetailsResponse"
+    AccountDetailsESBResponse:
+      description: Valid response upon successful details retrieval.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AccountDetailsESBResponse"
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorItem"
+    ErrorItem:
+      type: object
+      properties:
+        statusCode:
+          type: string
+          description: The status code based on the type of error.
+          example: 2
+        severity:
+          type: string
+          example: ERR
+        statusDescription:
+          type: string
+          example: INCORRECT INPUT FORMAT
+    AccountsByMemberIDRequest:
+      type: object
+      properties:
+        branch:
+          type: string
+        memberId:
+          type: string
+        plan:
+          type: string
+    AccountDetailsResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+        branch:
+          type: string
+        customerNumber:
+          type: string
+        message:
+          type: string
+        plan:
+          type: string
+        ssn:
+          type: string
+        customerDetails:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomerAccountDetails"
+    CustomerAccountDetails:
+      type: object
+      properties:
+        customerNumber:
+          type: string
+        accountDetails:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountDetail"
+    AccountDetail:
+      type: object
+      properties:
+        accountNumber:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleInitial:
+          type: string
+        openDate:
+          type: string
+          format: date
+        ssn:
+          type: string
+        status:
+          type: string
+    AccountDetailsRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        requestType:
+          type: string
+        versionNumber:
+          type: string
+        requestId:
+          type: string
+        limitResultPage:
+          type: number
+        limitResultSize:
+          type: number
+    AccountDetailsESBResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+        status:
+          $ref: "#/components/schemas/EsbStatusDto"
+        responseDetails:
+          $ref: "#/components/schemas/ResponseDetailsDto"
+        hasMoreRecords:
+          type: boolean
+          description: Flag to indicate more records exist
+    EsbStatusDto:
+      type: object
+      properties:
+        statusCode:
+          type: string
+        severity:
+          type: string
+        statusDescription:
+          type: string
+    ResponseDetailsDto:
+      type: object
+      properties:
+        branchId:
+          type: string
+        planId:
+          type: string
+        employerAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmployerAccountDto"
+    EmployerAccountDto:
+      type: object
+      properties:
+        employerGroupId:
+          type: string
+        participantDetails:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParticipantDetailsDto"
+    ParticipantDetailsDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        middleInitial:
+          type: string
+        lastName:
+          type: string
+        socialSecurityNumber:
+          type: string
+        accountNumber:
+          type: string
+        accountOpenDate:
+          type: string
+          format: date
+        effectiveTermDate:
+          type: string
+          format: date
+        routingNumber:
+          type: string
+        employerName:
+          type: string
+        participantStatus:
+          $ref: "#/components/schemas/ParticipantStatusDto"
+    ParticipantStatusDto:
+      type: object
+      properties:
+        code:
+          type: string
+        codeName:
+          type: string
