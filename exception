@@ -61,3 +61,155 @@ Response:
         ]
     }
 }
+
+
+package com.optum.ftps.ob.core.account.details.repository.impl;
+
+import com.optum.ftps.ob.core.account.details.constants.AccountDetailsEsbConstants;
+import com.optum.ftps.ob.core.account.details.constants.LoggingConstants;
+import com.optum.ftps.ob.core.account.details.dto.esb.AccountDetailsEsbDto;
+import com.optum.ftps.ob.core.account.details.dto.esb.AccountInfoDto;
+import com.optum.ftps.ob.core.account.details.repository.AccountDetailsEsbRepository;
+import com.optum.ftps.ob.core.account.details.util.StringUtil;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+@Repository
+public class AccountDetailsEsbRepositoryImpl implements AccountDetailsEsbRepository {
+
+    @Override
+    public Page<AccountInfoDto> getAccountDetailsPaginated(
+            AccountDetailsEsbDto accountDetailsEsbDto, Pageable pageable) {
+        List<AccountInfoDto> accounts = getAccountInfoDtoList(1500); // Generate 1500 records
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), accounts.size());
+        return new PageImpl<>(accounts.subList(start, end), pageable, accounts.size());
+    }
+
+    @Override
+    public AccountDetailsEsbDto getAccountDetails(AccountDetailsEsbDto accountDetailsEsbDto) {
+
+        return getEmpAccountDetails(accountDetailsEsbDto);
+    }
+
+    public AccountDetailsEsbDto getEmpAccountDetails(AccountDetailsEsbDto accountDetailsEsbDto) {
+        try {
+            boolean rsExists = true;
+
+            List<AccountInfoDto> accounts = null;
+            if (rsExists) {
+                accounts = getAccountInfoDtoList(1500); // Generate 1500 records
+            }
+            accountDetailsEsbDto.setBranchId("003"); // it is fetched by DB
+            accountDetailsEsbDto.setPlanId("061"); // it is fetched by DB
+            accountDetailsEsbDto.setAccounts(accounts);
+
+            // code added for ANF report
+            getEnrlGoodRecDetails(accountDetailsEsbDto, rsExists);
+            getEnrlErrRecDetails(accountDetailsEsbDto, rsExists);
+            List<AccountInfoDto> list = accountDetailsEsbDto.getAccounts();
+            Set<String> contentSet = new LinkedHashSet<>();
+            for (AccountInfoDto infoTO : list) {
+                if (!StringUtil.isEmpty(infoTO.getSocialSecurityNumber())) {
+                    contentSet.add(LoggingConstants.SSN.getValue());
+                }
+                if (!StringUtil.isEmpty(infoTO.getFirstName())
+                        || !StringUtil.isEmpty(infoTO.getLastName())
+                        || !StringUtil.isEmpty(infoTO.getMiddleInitial())) {
+                    contentSet.add(LoggingConstants.NAME.getValue());
+                }
+                if (!StringUtil.isEmpty(infoTO.getRoutingNumber())
+                        || !StringUtil.isEmpty(infoTO.getAccountNumber())
+                        || (infoTO.getAccountOpenDate() != null)
+                        || (infoTO.getEffectiveTermDate() != null)) {
+                    contentSet.add(LoggingConstants.ACCTINFO.getValue());
+                }
+                if (contentSet.size() == 3) break;
+            }
+            if (contentSet.size() > 0) {}
+
+        } catch (Exception ex) {
+            //  throw new DAOException(ex);
+        }
+
+        return accountDetailsEsbDto;
+    }
+
+    private AccountDetailsEsbDto getEnrlGoodRecDetails(
+            AccountDetailsEsbDto accountDetailsEsbDto, boolean rsExists) {
+
+        List<AccountInfoDto> goodRecDetails = new ArrayList<>();
+        AccountInfoDto accountInfo = null;
+        String employerId = accountDetailsEsbDto.getEmployerId();
+        employerId = StringUtil.getTrimmedStringUpperCase(employerId);
+
+        if (rsExists) {
+            //// while(nrs.next()){//if reseult set to iterate
+            accountInfo = getAccountInfoDto(); // Pass Resultset if connceted with D
+            goodRecDetails.add(accountInfo);
+            // }
+        }
+        accountDetailsEsbDto.setEnrlGoodRec(goodRecDetails);
+        return accountDetailsEsbDto;
+    }
+
+    private AccountDetailsEsbDto getEnrlErrRecDetails(
+            AccountDetailsEsbDto accountDetailsEsbDto, boolean rsExists) {
+        List<AccountInfoDto> goodRecDetails = new ArrayList<>();
+        AccountInfoDto accountInfo = null;
+        String employerId = accountDetailsEsbDto.getEmployerId();
+        employerId = StringUtil.getTrimmedStringUpperCase(employerId);
+
+        if (rsExists) {
+            //// while(nrs.next()){//if reseult set to iterate
+            accountInfo = getAccountInfoDto(); // Pass Resultset if connceted with D
+            goodRecDetails.add(accountInfo);
+            // }
+        }
+        accountDetailsEsbDto.setEnrlErrorRec(goodRecDetails);
+        return accountDetailsEsbDto;
+    }
+
+    private AccountInfoDto getAccountInfoDto() {
+        AccountInfoDto accountInfo = new AccountInfoDto();
+        accountInfo.setEmployerGroupId("704280BCC");
+        accountInfo.setFirstName("Robin");
+        accountInfo.setMiddleInitial("");
+        accountInfo.setLastName(("Raj"));
+        accountInfo.setSocialSecurityNumber("105460244");
+        accountInfo.setEmployerName(AccountDetailsEsbConstants.ORG_NAME);
+        return accountInfo;
+    }
+
+    private List<AccountInfoDto> getAccountInfoDtoList(int count) {
+        List<AccountInfoDto> accountInfoList = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            AccountInfoDto accountInfo = new AccountInfoDto();
+            accountInfo.setEmployerGroupId("730061B");
+            accountInfo.setFirstName("FirstName" + i);
+            accountInfo.setMiddleInitial("M");
+            accountInfo.setLastName("LastName" + i);
+            accountInfo.setSocialSecurityNumber("222222222" + i);
+            accountInfo.setAccountNumber("1103644521" + i);
+            accountInfo.setAccountOpenDate(new Date());
+            accountInfo.setAcctStatuscode("A");
+            accountInfo.setEffectiveTermDate(new Date());
+            accountInfo.setRoutingNumber("124384877");
+            accountInfo.setEmployerName(AccountDetailsEsbConstants.ORG_NAME);
+
+            accountInfoList.add(accountInfo);
+        }
+        return accountInfoList;
+    }
+}
+
