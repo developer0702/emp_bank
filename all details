@@ -1,0 +1,1220 @@
+
+AccountDetailsESB-
+
+http://localhost:8080/getAccountDetailsESB
+
+REQUEST :
+
+{
+  "id": "730061B",
+  "requestType": "ACTBYEMP",
+  "versionNumber": "01",
+  "requestId": "123",
+  "limitResult": {
+    "resultPage": 0,
+    "resultSize": 0
+  }
+}
+
+
+Response-
+
+{
+    "requestId": "123",
+    "status": {
+        "statusCode": "0000",
+        "severity": "INF",
+        "statusDescription": "requestSuccessfullyProcessed"
+    }, //may be will get it from code if SRVice_message_type
+    "responseDetails": {
+        "branchId": "003",
+        "planId": "061",
+        "employerAccounts": [
+            {
+                "employerGroupId": "730061B",
+                "participantDetails": [
+                    {
+                        "firstName": "JOYCE",
+                        "middleInitial": "",
+                        "lastName": "GRANT",
+                        "socialSecurityNumber": "251110091",
+                        "accountNumber": "405981141",
+                        "accountOpenDate": "2025-01-29T12:07:41.202+00:00",
+                        "effectiveTermDate": "2025-01-29T12:07:41.202+00:00",
+                        "routingNumber": "124384877",
+                        "employerName": "AGFA MATERIALS",
+                        "participantStatus": {
+                            "code": "A",
+                            "codeName": "ACTIVE"
+                        }
+                    },
+                    {
+                        "firstName": "WOJCIECH",
+                        "middleInitial": "",
+                        "lastName": "BALCEWICZ",
+                        "socialSecurityNumber": "105460244",
+                        "accountNumber": "404743908",
+                        "accountOpenDate": "2025-01-29T12:07:41.202+00:00",
+                        "effectiveTermDate": "2025-01-29T12:07:41.202+00:00",
+                        "routingNumber": "124384877",
+                        "employerName": "AGFA MATERIALS",
+                        "participantStatus": {
+                            "code": "A",
+                            "codeName": "ACTIVE"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+
+---
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Account Details API
+  description: OpenAPI specification for AccountDetails APIs
+  termsOfService: https://changeme.optum.com/
+  contact:
+    name: Optum Financial OBI Team
+    email: Team_OBI@ds.uhc.com
+    url: https://www.optum.com/
+paths:
+  /getAccountDetails:
+    post:
+      operationId: getAccountDetailsByMemberId
+      summary: Get Account Details Summary
+      tags:
+      - AccountDetails
+      requestBody:
+        $ref: "#/components/requestBodies/AccountsByMemberIDRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/AccountDetailsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponse"
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+        default:
+          $ref: "#/components/responses/UnexpectedErrorResponse"
+  /getAccountDetailsESB:
+    post:
+      operationId: getAccountDetails
+      summary: Get Account Details ESB Details
+      tags:
+      - AccountDetails
+      requestBody:
+        $ref: "#/components/requestBodies/AccountDetailsRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/AccountDetailsESBResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponse"
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+        default:
+          $ref: "#/components/responses/UnexpectedErrorResponse"
+components:
+  requestBodies:
+    AccountsByMemberIDRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AccountsByMemberIDRequest"
+    AccountDetailsRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AccountDetailsRequest"
+  responses:
+    BadRequestErrorResponse:
+      description: Invalid element on request.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFoundErrorResponse:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ServerErrorResponse:
+      description: Server failed to process the request.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    UnexpectedErrorResponse:
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    AccountDetailsResponse:
+      description: valid response upon successful summary retrieval
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AccountDetailsResponse"
+    AccountDetailsESBResponse:
+      description: valid response upon successful details retrieval
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AccountDetailsESBResponse"
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorItem"
+    ErrorItem:
+      type: object
+      properties:
+        statusCode:
+          type: string
+          description: The status code based on the type of error.
+          example: 2
+        severity:
+          type: string
+          example: ERR
+        statusDescription:
+          type: string
+          example: INCORRECT INPUT FORMAT
+    AccountsByMemberIDRequest:
+      type: object
+      properties:
+        branch:
+          type: string
+        memberId:
+          type: string
+        plan:
+          type: string
+    AccountDetailsResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+        branch:
+          type: string
+        customerNumber:
+          type: string
+        message:
+          type: string
+        plan:
+          type: string
+        ssn:
+          type: string
+        customerDetails:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomerAccountDetails"
+    CustomerAccountDetails:
+      type: object
+      properties:
+        customerNumber:
+          type: string
+        accountDetails:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountDetail"
+    AccountDetail:
+      type: object
+      properties:
+        accountNumber:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleInitial:
+          type: string
+        openDate:
+          type: Date
+        ssn:
+          type: string
+        status:
+          type: string
+    AccountDetailsRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        requestType:
+          type: string
+        versionNumber:
+          type: string
+        requestId:
+          type: string
+        limitResult:
+          type: object
+          $ref: "#/components/schemas/LimitResultType"
+    LimitResultType:
+      properties:
+        resultPage:
+          type: number
+        resultSize:
+          type: number
+    AccountDetailsESBResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
+        responseDetails:
+          $ref: "#/components/schemas/ResponseDetailsType"
+    ResponseDetailsType:
+      type: object
+      properties:
+        branchId:
+          type: string
+        planId:
+          type: string
+        employerAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmployerAccountsType"
+    EmployerAccountsType:
+      type: object
+      properties:
+        employerGroupId:
+          type: string
+        participantDetails:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParticipantDetailsType"
+    ParticipantDetailsType:
+      type: object
+      properties:
+        firstName:
+          type: string
+        middleInitial:
+          type: string
+        lastName:
+          type: string
+        socialSecurityNumber:
+          type: string
+        accountNumber:
+          type: string
+        accountOpenDate:
+          type: Date
+        effectiveTermDate:
+          type: Date
+        routingNumber:
+          type: string
+        employerName:
+          type: string
+        participantStatus:
+          type: object
+          $ref: "#/components/schemas/ParticipantStatusType"
+    ParticipantStatusType:
+      type: object
+      properties:
+        code:
+          type: string
+        codeName:
+          type: string
+    StatusType:
+      type: object
+      properties:
+        statusCode:
+          type: string
+        severity:
+          type: string
+        statusDescription:
+          type: string
+
+
+======================controller======================
+package com.optum.ftps.ob.core.account.details.controller;
+
+import com.optum.ftps.ob.core.account.details.api.v1.AccountDetailsApi;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountDetailsESBResponse;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountDetailsRequest;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountDetailsResponse;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountsByMemberIDRequest;
+import com.optum.ftps.ob.core.account.details.service.AccountDetailsByMemberIdService;
+import com.optum.ftps.ob.core.account.details.service.AccountDetailsEsbService;
+import com.optum.ftps.ob.core.account.details.validator.AccountByMemberIdValidator;
+import com.optum.ftps.ob.core.account.details.validator.AccountDetailsEsbValidator;
+
+import jakarta.validation.Valid;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController
+@RequiredArgsConstructor
+public class AccountDetailsController implements AccountDetailsApi {
+
+    private final AccountDetailsByMemberIdService accountDetailsByMemberIdService;
+    private final AccountDetailsEsbService accountDetailsEsbService;
+    private final AccountByMemberIdValidator accountByMemberIdValidator;
+    private final AccountDetailsEsbValidator accountDetailsEsbValidator;
+
+    @Override
+    public ResponseEntity<AccountDetailsResponse> getAccountDetailsByMemberId(
+            @Valid @RequestBody AccountsByMemberIDRequest request) {
+        log.info("getAccountDetailsByMemberId: request={}", request);
+        accountByMemberIdValidator.validate(request);
+        if (accountDetailsByMemberIdService.getAccountDetailsByMemberId(request) != null) {
+            return new ResponseEntity<>(
+                    accountDetailsByMemberIdService.getAccountDetailsByMemberId(request),
+                    HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    public ResponseEntity<AccountDetailsESBResponse> getAccountDetails(
+            @Valid @RequestBody AccountDetailsRequest request) {
+        log.info("getAccountDetails: request={}", request);
+        accountDetailsEsbValidator.validate(request);
+        if (accountDetailsEsbService.getAccountDetails(request) != null) {
+            return new ResponseEntity<>(
+                    accountDetailsEsbService.getAccountDetails(request), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+}
+
+======================AccountDetailsEsbDto============
+
+package com.optum.ftps.ob.core.account.details.dto.esb;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class AccountDetailsEsbDto implements Serializable {
+
+    private String branchId;
+
+    private String planId;
+
+    private String payerName;
+
+    private String employerId;
+
+    private String requestType;
+
+    private String versionNumber;
+
+    private String requestId;
+
+    private long resultPage;
+
+    private long resultSize;
+
+    private long maxRecords;
+
+    private List<AccountInfoDto> accounts;
+
+    // Code added for ANF report
+    private List<AccountInfoDto> enrlGoodRec;
+    private List<AccountInfoDto> enrlErrorRec;
+    private Set<String> goodRec;
+    private Set<String> errorRec;
+
+    // Code added for duplicate SSN
+    private String argSocialSecNbr;
+}
+=======================AccountDetailsEsbServiceImpl======================
+package com.optum.ftps.ob.core.account.details.service.impl;
+
+import com.optum.ftps.ob.core.account.details.constants.AccountDetailsEsbConstants;
+import com.optum.ftps.ob.core.account.details.dto.esb.AccountDetailsEsbDto;
+import com.optum.ftps.ob.core.account.details.dto.esb.AccountInfoDto;
+import com.optum.ftps.ob.core.account.details.helper.AccountDetailsEsbHelper;
+import com.optum.ftps.ob.core.account.details.helper.PageSet;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountDetailsESBResponse;
+import com.optum.ftps.ob.core.account.details.model.v1.AccountDetailsRequest;
+import com.optum.ftps.ob.core.account.details.model.v1.EmployerAccountsType;
+import com.optum.ftps.ob.core.account.details.model.v1.ParticipantDetailsType;
+import com.optum.ftps.ob.core.account.details.model.v1.ParticipantStatusType;
+import com.optum.ftps.ob.core.account.details.model.v1.ResponseDetailsType;
+import com.optum.ftps.ob.core.account.details.model.v1.StatusType;
+import com.optum.ftps.ob.core.account.details.repository.AccountDetailsEsbRepository;
+import com.optum.ftps.ob.core.account.details.service.AccountDetailsEsbService;
+import com.optum.ftps.ob.core.account.details.util.StringUtil;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Service
+@RequiredArgsConstructor
+public class AccountDetailsEsbServiceImpl implements AccountDetailsEsbService {
+
+    private final AccountDetailsEsbRepository accountDetailsEsbRepository;
+
+    public static AccountDetailsESBResponse buildAccountDetailsResponse(
+            AccountDetailsEsbDto accountDetails) {
+
+        AccountDetailsESBResponse accountDetailsESBResponse = new AccountDetailsESBResponse();
+        accountDetailsESBResponse.setRequestId(accountDetails.getRequestId());
+
+        StatusType accountStatus =
+                buildStatusBean(
+                        AccountDetailsEsbConstants
+                                .REQUEST_SUCCESSFULLY_PROCESSED); // 9	REQUEST SUCCESSFULLY
+        // PROCESSED	0000
+        accountDetailsESBResponse.setStatus(accountStatus);
+
+        ResponseDetailsType responseDetailType = new ResponseDetailsType();
+        responseDetailType.setBranchId(accountDetails.getBranchId());
+        responseDetailType.setPlanId(accountDetails.getPlanId());
+
+        // code added for ANF report
+        List<ParticipantDetailsType> respAccountDtlsGoodRec = null;
+        List<ParticipantDetailsType> respAccountDtlsErrRec = null;
+        List<ParticipantDetailsType> respAccountDtlsClosedRec = null;
+        List<AccountInfoDto> accounts = accountDetails.getAccounts();
+        List<EmployerAccountsType> empAccountBeans = new ArrayList<>();
+        Set<String> accountHolder = new HashSet<>();
+        String[] prvEmpGrpNbr = {""};
+        final EmployerAccountsType[] employerAccountType = {null};
+        int acctsSize = 0;
+        final List<ParticipantDetailsType>[] partcpDetails = new List[] {new ArrayList<>()};
+        if (accounts != null) {
+            int acctsRecSize = Math.min(accounts.size(), (int) accountDetails.getResultSize());
+
+            accounts.stream()
+                    .limit(acctsRecSize)
+                    .filter(
+                            accountInfoTO ->
+                                    "A".equalsIgnoreCase(accountInfoTO.getAcctStatuscode()))
+                    .forEach(
+                            accountInfoTO -> {
+                                accountHolder.add(accountInfoTO.getSocialSecurityNumber());
+                                String empGrpNbr = accountInfoTO.getEmployerGroupId();
+
+                                if (empGrpNbr != null && !empGrpNbr.equals(prvEmpGrpNbr[0])) {
+                                    if (!StringUtil.isEmpty(prvEmpGrpNbr[0])) {
+                                        employerAccountType[0].setParticipantDetails(
+                                                new ArrayList<>(partcpDetails[0]));
+                                    }
+                                    employerAccountType[0] = new EmployerAccountsType();
+                                    empAccountBeans.add(employerAccountType[0]);
+                                    employerAccountType[0].setEmployerGroupId(empGrpNbr);
+                                    partcpDetails[0] = new ArrayList<>();
+                                }
+                                ParticipantDetailsType participantType =
+                                        getParticipantDetailsType(accountInfoTO);
+
+                                partcpDetails[0].add(participantType);
+                                prvEmpGrpNbr[0] = empGrpNbr;
+                            });
+        }
+
+        getResponse(
+                accountDetails,
+                empAccountBeans,
+                accountHolder,
+                partcpDetails,
+                employerAccountType,
+                responseDetailType,
+                accountDetailsESBResponse);
+
+        long pageSize = accountDetails.getResultSize();
+        // Builds the account status code as 'result truncated additional record
+        // exists', if there are more rows returned from db than requested.
+        if (pageSize < acctsSize) {
+            accountStatus =
+                    buildStatusBean(
+                            AccountDetailsEsbConstants
+                                    .RESULT_TRUNCATED_ADDITIONAL_RECORDS_EXIST); // 34	RESULT
+            // TRUNCATED
+            // ADDITIONAL
+            // RECORDS EXIST
+            //	0000
+            accountDetailsESBResponse.setStatus(accountStatus);
+        }
+        return accountDetailsESBResponse;
+    }
+
+    private static ParticipantDetailsType getParticipantDetailsType(AccountInfoDto accountInfoTO) {
+        ParticipantDetailsType participantType = new ParticipantDetailsType();
+        participantType.setAccountNumber(accountInfoTO.getAccountNumber());
+        participantType.setAccountOpenDate(accountInfoTO.getAccountOpenDate());
+        participantType.setEffectiveTermDate(accountInfoTO.getEffectiveTermDate());
+        participantType.setFirstName(accountInfoTO.getFirstName());
+        participantType.setMiddleInitial(accountInfoTO.getMiddleInitial());
+        participantType.setLastName(
+                accountInfoTO.getLastName() == null
+                        ? AccountDetailsEsbConstants.NULL_STRING
+                        : accountInfoTO.getLastName());
+        participantType.setSocialSecurityNumber(accountInfoTO.getSocialSecurityNumber());
+
+        String statusCode = AccountDetailsEsbConstants.ACCOUNT_STATUS_CODE_ACTIVE;
+        String statusDesc = AccountDetailsEsbConstants.ACCT_ACT_STS_DESC;
+        ParticipantStatusType statusType = new ParticipantStatusType();
+        statusType.setCode(statusCode);
+        statusType.setCodeName(statusDesc);
+        participantType.setParticipantStatus(statusType);
+        participantType.setRoutingNumber(accountInfoTO.getRoutingNumber());
+        participantType.setEmployerName(accountInfoTO.getEmployerName());
+
+        return participantType;
+    }
+
+    private static List<ParticipantDetailsType> buildResponseAccountsDetailClosedRec(
+            AccountDetailsEsbDto accountDetails, Set<String> accountHolder) {
+
+        List<AccountInfoDto> anfClosedRec = accountDetails.getAccounts();
+        Set<String> goodRec = accountDetails.getGoodRec();
+        Set<String> errorRec = accountDetails.getErrorRec();
+        List<ParticipantDetailsType> partcpClosedDetails = new ArrayList<>();
+        List<EmployerAccountsType> empAccountBeans = new ArrayList<>();
+        String[] prvEmpGrpNbr = {""};
+        EmployerAccountsType[] employerAccountType = {null};
+
+        if (anfClosedRec != null) {
+            anfClosedRec.stream()
+                    .filter(
+                            accountInfoDto ->
+                                    "C".equalsIgnoreCase(accountInfoDto.getAcctStatuscode()))
+                    .filter(
+                            accountInfoDto ->
+                                    !accountHolder.contains(
+                                                    accountInfoDto.getSocialSecurityNumber())
+                                            && !goodRec.contains(
+                                                    accountInfoDto.getSocialSecurityNumber())
+                                            && !errorRec.contains(
+                                                    accountInfoDto.getSocialSecurityNumber()))
+                    .forEach(
+                            accountInfoDto -> {
+                                String empGrpNbr = accountInfoDto.getEmployerGroupId();
+
+                                if (empGrpNbr != null && !empGrpNbr.equals(prvEmpGrpNbr[0])) {
+                                    if (!StringUtil.isEmpty(prvEmpGrpNbr[0])) {
+                                        employerAccountType[0].setParticipantDetails(
+                                                new ArrayList<>(partcpClosedDetails));
+                                    }
+                                    employerAccountType[0] = new EmployerAccountsType();
+                                    empAccountBeans.add(employerAccountType[0]);
+                                    employerAccountType[0].setEmployerGroupId(empGrpNbr);
+                                    partcpClosedDetails.clear();
+                                }
+
+                                ParticipantDetailsType participantType =
+                                        getParticipantDetailsTypeClosedRec(accountInfoDto);
+                                partcpClosedDetails.add(participantType);
+                                prvEmpGrpNbr[0] = empGrpNbr;
+                            });
+        }
+        return partcpClosedDetails;
+    }
+
+    private static List<ParticipantDetailsType> buildResponseAccountsDetailGoodRec(
+            AccountDetailsEsbDto accountDetails, Set<String> accountHolder) {
+
+        var anfGoodRec = accountDetails.getEnrlGoodRec();
+        var goodRec = new HashSet<String>();
+        var empAccountBeans = new ArrayList<EmployerAccountsType>();
+        var prvEmpGrpNbr = new String[] {""};
+        var partcpGoodDetails = new ArrayList<ParticipantDetailsType>();
+        var employerAccountType = new EmployerAccountsType[] {null};
+
+        if (anfGoodRec != null) {
+            anfGoodRec.stream()
+                    .filter(
+                            accountInfoDto ->
+                                    !accountHolder.contains(
+                                            accountInfoDto.getSocialSecurityNumber()))
+                    .forEach(
+                            accountInfoDto -> {
+                                goodRec.add(accountInfoDto.getSocialSecurityNumber());
+                                var empGrpNbr = accountInfoDto.getEmployerGroupId();
+
+                                if (empGrpNbr != null && !empGrpNbr.equals(prvEmpGrpNbr[0])) {
+                                    if (!StringUtil.isEmpty(prvEmpGrpNbr[0])) {
+                                        employerAccountType[0].setParticipantDetails(
+                                                List.copyOf(partcpGoodDetails));
+                                    }
+                                    employerAccountType[0] = new EmployerAccountsType();
+                                    empAccountBeans.add(employerAccountType[0]);
+                                    employerAccountType[0].setEmployerGroupId(empGrpNbr);
+                                    partcpGoodDetails.clear();
+                                }
+
+                                var participantType =
+                                        getParticipantDetailsTypeGoodRec(accountInfoDto);
+
+                                partcpGoodDetails.add(participantType);
+                                prvEmpGrpNbr[0] = empGrpNbr;
+                            });
+        }
+        accountDetails.setGoodRec(goodRec);
+        return partcpGoodDetails;
+    }
+
+    private static List<ParticipantDetailsType> buildResponseAccountsDetailErrRec(
+            AccountDetailsEsbDto accountDetails, Set<String> accountHolder) {
+        var anfErrRec = accountDetails.getEnrlErrorRec();
+        var errorRec = new HashSet<String>();
+        var goodRec = accountDetails.getGoodRec();
+        List<ParticipantDetailsType> partcpErrDetails = new ArrayList<>();
+        List<EmployerAccountsType> empAccountBeans = new ArrayList<>();
+        String[] prvEmpGrpNbr = {""};
+        EmployerAccountsType[] employerAccountType = {null};
+
+        if (anfErrRec != null) {
+            anfErrRec.stream()
+                    .filter(
+                            accountInfoDto ->
+                                    !accountHolder.contains(
+                                                    accountInfoDto.getSocialSecurityNumber())
+                                            && !goodRec.contains(
+                                                    accountInfoDto.getSocialSecurityNumber()))
+                    .forEach(
+                            accountInfoDto -> {
+                                errorRec.add(accountInfoDto.getSocialSecurityNumber());
+                                String empGrpNbr = accountInfoDto.getEmployerGroupId();
+
+                                if (empGrpNbr != null && !empGrpNbr.equals(prvEmpGrpNbr[0])) {
+                                    if (!StringUtil.isEmpty(prvEmpGrpNbr[0])) {
+                                        employerAccountType[0].setParticipantDetails(
+                                                new ArrayList<>(partcpErrDetails));
+                                    }
+                                    employerAccountType[0] = new EmployerAccountsType();
+                                    empAccountBeans.add(employerAccountType[0]);
+                                    employerAccountType[0].setEmployerGroupId(empGrpNbr);
+                                    partcpErrDetails.clear();
+                                }
+
+                                ParticipantDetailsType participantType =
+                                        getParticipantDetailsTypeError(accountInfoDto);
+                                partcpErrDetails.add(participantType);
+                                prvEmpGrpNbr[0] = empGrpNbr;
+                            });
+        }
+        accountDetails.setErrorRec(errorRec);
+        return partcpErrDetails;
+    }
+
+    private static StatusType buildStatusBean(int statusCode) {
+        // Status code is used for fetching data from DB
+        StatusType status = new StatusType();
+        status.setStatusCode(AccountDetailsEsbConstants.STATUS_CODE_SUCCESS);
+        status.setStatusDescription("requestSuccessfullyProcessed");
+        status.setSeverity("INF");
+        return status;
+    }
+
+    private static ParticipantDetailsType getParticipantDetailsTypeError(
+            AccountInfoDto accountInfoDto) {
+        ParticipantDetailsType participantType = new ParticipantDetailsType();
+        participantType.setAccountNumber("");
+        participantType.setAccountOpenDate(null);
+        participantType.setEffectiveTermDate(null);
+        participantType.setFirstName(accountInfoDto.getFirstName());
+        participantType.setMiddleInitial(accountInfoDto.getMiddleInitial());
+        participantType.setLastName(
+                accountInfoDto.getLastName() == null
+                        ? AccountDetailsEsbConstants.NULL_STRING
+                        : accountInfoDto.getLastName());
+        participantType.setSocialSecurityNumber(accountInfoDto.getSocialSecurityNumber());
+
+        String statusCode = AccountDetailsEsbConstants.ACCOUNT_STATUS_CODE_TERMINATION;
+        String statusDesc = AccountDetailsEsbConstants.ACCT_TRM_STS_DESC;
+        ParticipantStatusType statusType = new ParticipantStatusType();
+        statusType.setCode(statusCode);
+        statusType.setCodeName(statusDesc);
+        participantType.setParticipantStatus(statusType);
+        participantType.setRoutingNumber("");
+        participantType.setEmployerName(accountInfoDto.getEmployerName());
+
+        return participantType;
+    }
+
+    private static ParticipantDetailsType getParticipantDetailsTypeGoodRec(
+            AccountInfoDto accountInfoDto) {
+        var participantType = new ParticipantDetailsType();
+
+        participantType.setAccountNumber("");
+        participantType.setAccountOpenDate(null);
+        participantType.setEffectiveTermDate(null);
+        participantType.setFirstName(accountInfoDto.getFirstName());
+        participantType.setMiddleInitial(accountInfoDto.getMiddleInitial());
+        participantType.setLastName(
+                accountInfoDto.getLastName() == null
+                        ? AccountDetailsEsbConstants.NULL_STRING
+                        : accountInfoDto.getLastName());
+        participantType.setSocialSecurityNumber(accountInfoDto.getSocialSecurityNumber());
+        var statusType = new ParticipantStatusType();
+        statusType.setCode(AccountDetailsEsbConstants.ACCOUNT_STATUS_CODE_PENDING);
+        statusType.setCodeName(AccountDetailsEsbConstants.ACCT_PND_STS_DESC);
+        participantType.setParticipantStatus(statusType);
+        participantType.setRoutingNumber("");
+        participantType.setEmployerName(accountInfoDto.getEmployerName());
+        return participantType;
+    }
+
+    private static ParticipantDetailsType getParticipantDetailsTypeClosedRec(
+            AccountInfoDto accountInfoDto) {
+        ParticipantDetailsType participantType = new ParticipantDetailsType();
+        participantType.setAccountNumber(accountInfoDto.getAccountNumber());
+        participantType.setAccountOpenDate(accountInfoDto.getAccountOpenDate());
+        participantType.setEffectiveTermDate(accountInfoDto.getEffectiveTermDate());
+        participantType.setFirstName(accountInfoDto.getFirstName());
+        participantType.setMiddleInitial(accountInfoDto.getMiddleInitial());
+        participantType.setLastName(
+                accountInfoDto.getLastName() == null
+                        ? AccountDetailsEsbConstants.NULL_STRING
+                        : accountInfoDto.getLastName());
+        participantType.setSocialSecurityNumber(accountInfoDto.getSocialSecurityNumber());
+
+        String statusCode = AccountDetailsEsbConstants.ACCOUNT_STATUS_CODE_CLOSED;
+        String statusDesc = AccountDetailsEsbConstants.ACCT_CLS_STS_DESC;
+        ParticipantStatusType statusType = new ParticipantStatusType();
+        statusType.setCode(statusCode);
+        statusType.setCodeName(statusDesc);
+        participantType.setParticipantStatus(statusType);
+        participantType.setRoutingNumber(accountInfoDto.getRoutingNumber());
+        participantType.setEmployerName(accountInfoDto.getEmployerName());
+
+        return participantType;
+    }
+
+    private static void getGoodRecList(
+            List<ParticipantDetailsType> respAccountDtlsGoodRec,
+            List<ParticipantDetailsType>[] partcpDetails) {
+        if (respAccountDtlsGoodRec != null && !respAccountDtlsGoodRec.isEmpty()) {
+            partcpDetails[0].addAll(respAccountDtlsGoodRec);
+        }
+    }
+
+    private static void getErrorRecList(
+            List<ParticipantDetailsType> respAccountDtlsGoodRec,
+            List<ParticipantDetailsType>[] partcpDetails) {
+        if (respAccountDtlsGoodRec != null && !respAccountDtlsGoodRec.isEmpty()) {
+            partcpDetails[0].addAll(respAccountDtlsGoodRec);
+        }
+    }
+
+    private static void getClosedRecList(
+            List<ParticipantDetailsType> respAccountDtlsClosedRec,
+            List<ParticipantDetailsType>[] partcpDetails) {
+        if (respAccountDtlsClosedRec != null && !respAccountDtlsClosedRec.isEmpty()) {
+            partcpDetails[0].addAll(respAccountDtlsClosedRec);
+        }
+    }
+
+    private static void getResponse(
+            AccountDetailsEsbDto accountDetails,
+            List<EmployerAccountsType> empAccountBeans,
+            Set<String> accountHolder,
+            List<ParticipantDetailsType>[] partcpDetails,
+            EmployerAccountsType[] employerAccountType,
+            ResponseDetailsType responseDetailType,
+            AccountDetailsESBResponse accountDetailsESBResponse) {
+        List<ParticipantDetailsType> respAccountDtlsErrRec;
+        List<ParticipantDetailsType> respAccountDtlsGoodRec;
+        List<ParticipantDetailsType> respAccountDtlsClosedRec;
+        if (!empAccountBeans.isEmpty()) {
+            // Adds the participant type list of the last employer group in the
+            // above loop to the employer account type bean
+
+            // code added for ANF Report
+            respAccountDtlsGoodRec =
+                    buildResponseAccountsDetailGoodRec(accountDetails, accountHolder);
+            getGoodRecList(respAccountDtlsGoodRec, partcpDetails);
+            respAccountDtlsErrRec =
+                    buildResponseAccountsDetailErrRec(accountDetails, accountHolder);
+            getErrorRecList(respAccountDtlsErrRec, partcpDetails);
+            respAccountDtlsClosedRec =
+                    buildResponseAccountsDetailClosedRec(accountDetails, accountHolder);
+            getClosedRecList(respAccountDtlsClosedRec, partcpDetails);
+            employerAccountType[0].setParticipantDetails(new ArrayList<>(partcpDetails[0]));
+
+            responseDetailType.setEmployerAccounts(new ArrayList<>(empAccountBeans));
+            accountDetailsESBResponse.setResponseDetails(responseDetailType);
+        }
+    }
+
+    @Override
+    public AccountDetailsESBResponse getAccountDetails(
+            AccountDetailsRequest accountDetailsRequest) {
+        trimFields(accountDetailsRequest);
+        versionNumberBlank(accountDetailsRequest);
+        AccountDetailsEsbDto accountDetailsEsbDto =
+                AccountDetailsEsbHelper.buildAccountDetailsTO(accountDetailsRequest);
+        PageSet.getInstance().checkResultLimit(accountDetailsEsbDto);
+        if (AccountDetailsEsbConstants.ACCOUNT_DETAILS_BY_EMPLOYER.equalsIgnoreCase(
+                accountDetailsRequest.getRequestType())) {
+            // Gets the account details for the given employer
+            accountDetailsEsbDto =
+                    accountDetailsEsbRepository.getAccountDetails(accountDetailsEsbDto);
+        }
+        return buildAccountDetailsResponse(accountDetailsEsbDto);
+    }
+
+    private void trimFields(AccountDetailsRequest accountDetailsRequest) {
+        if (!StringUtil.isEmpty(accountDetailsRequest.getId())) {
+            accountDetailsRequest.setId(accountDetailsRequest.getId().trim());
+        }
+        if (!StringUtil.isEmpty(accountDetailsRequest.getRequestType())) {
+            accountDetailsRequest.setRequestType(accountDetailsRequest.getRequestType().trim());
+        }
+    }
+
+    private void versionNumberBlank(AccountDetailsRequest accountDetailsRequest) {
+        if (StringUtil.isEmpty(accountDetailsRequest.getVersionNumber())) {
+            accountDetailsRequest.setVersionNumber(AccountDetailsEsbConstants.ACCTESB_DEF_VER_NO);
+        }
+    }
+}
+==============AccountDetailsEsbRepositoryImpl======================
+package com.optum.ftps.ob.core.account.details.repository.impl;
+
+import com.optum.ftps.ob.core.account.details.constants.AccountDetailsEsbConstants;
+import com.optum.ftps.ob.core.account.details.constants.LoggingConstants;
+import com.optum.ftps.ob.core.account.details.dto.esb.AccountDetailsEsbDto;
+import com.optum.ftps.ob.core.account.details.dto.esb.AccountInfoDto;
+import com.optum.ftps.ob.core.account.details.repository.AccountDetailsEsbRepository;
+import com.optum.ftps.ob.core.account.details.util.StringUtil;
+
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+@Repository
+public class AccountDetailsEsbRepositoryImpl implements AccountDetailsEsbRepository {
+
+    @Override
+    public AccountDetailsEsbDto getAccountDetails(AccountDetailsEsbDto accountDetailsEsbDto) {
+
+        return getEmpAccountDetails(accountDetailsEsbDto);
+    }
+
+    public AccountDetailsEsbDto getEmpAccountDetails(AccountDetailsEsbDto accountDetailsEsbDto) {
+
+        try {
+            ////  String employerId = accountDetailsEsbDto.getEmployerId();
+            // String requestType = accountDetailsEsbDto.getRequestType();
+            // Builds the sql query to get the account detail for the given employer group
+
+            boolean rsExists = true;
+            // long rsStartPos =
+            // PageSet.getInstance().calcRecTotalStartIndex(accountDetailsTO.getResultPage(),
+            // accountDetailsTO.getResultSize());
+            // Skips the result set rows to the row value for which the data is requested
+            //            for(int i=1; i < rsStartPos; i++){
+            //                if(!nrs.next()){
+            //                    rsExists = false;
+            //                    break;
+            //                }
+            //            }
+            AccountInfoDto accountInfo = null;
+            List<AccountInfoDto> accounts = null;
+            // Loops through the result set to build the account info TO list
+            if (rsExists) {
+                //  ResultSetHelper rs = new ResultSetHelper(nrs);
+                // while (nrs.next()) {
+                accounts = getAccountInfoDtoList();
+
+                // }
+            }
+            // Gets the payer details
+            // getPayerDetail(mSession, accountDetailsTO);
+            accountDetailsEsbDto.setBranchId("003"); // it is fetched by DB
+            accountDetailsEsbDto.setPlanId("061"); // it is fetched by DB
+            accountDetailsEsbDto.setAccounts(accounts);
+
+            // code added for ANF report
+            getEnrlGoodRecDetails(accountDetailsEsbDto, rsExists);
+            getEnrlErrRecDetails(accountDetailsEsbDto, rsExists);
+            List<AccountInfoDto> list = accountDetailsEsbDto.getAccounts();
+            Set<String> contentSet = new LinkedHashSet<>();
+            for (AccountInfoDto infoTO : list) {
+                if (!StringUtil.isEmpty(infoTO.getSocialSecurityNumber())) {
+                    contentSet.add(LoggingConstants.SSN.getValue());
+                }
+                if (!StringUtil.isEmpty(infoTO.getFirstName())
+                        || !StringUtil.isEmpty(infoTO.getLastName())
+                        || !StringUtil.isEmpty(infoTO.getMiddleInitial())) {
+                    contentSet.add(LoggingConstants.NAME.getValue());
+                }
+                if (!StringUtil.isEmpty(infoTO.getRoutingNumber())
+                        || !StringUtil.isEmpty(infoTO.getAccountNumber())
+                        || (infoTO.getAccountOpenDate() != null)
+                        || (infoTO.getEffectiveTermDate() != null)) {
+                    contentSet.add(LoggingConstants.ACCTINFO.getValue());
+                }
+                if (contentSet.size() == 3) break;
+            }
+            if (contentSet.size() > 0) {
+                //  CentralLoggingComponent.accessToCustomerData(
+                //          Process.GET_ACCOUNT_DETAILS,
+                //         StringUtils.join(contentSet.iterator(), ";"),"");
+            }
+        } catch (Exception ex) {
+            //  throw new DAOException(ex);
+        }
+
+        return accountDetailsEsbDto;
+    }
+
+    private AccountDetailsEsbDto getEnrlGoodRecDetails(
+            AccountDetailsEsbDto accountDetailsEsbDto, boolean rsExists) {
+
+        List<AccountInfoDto> goodRecDetails = new ArrayList<>();
+        AccountInfoDto accountInfo = null;
+        String employerId = accountDetailsEsbDto.getEmployerId();
+        employerId = StringUtil.getTrimmedStringUpperCase(employerId);
+
+        if (rsExists) {
+            //// while(nrs.next()){//if reseult set to iterate
+            accountInfo = getAccountInfoDto(); // Pass Resultset if connceted with D
+            goodRecDetails.add(accountInfo);
+            // }
+        }
+        accountDetailsEsbDto.setEnrlGoodRec(goodRecDetails);
+        return accountDetailsEsbDto;
+    }
+
+    private AccountDetailsEsbDto getEnrlErrRecDetails(
+            AccountDetailsEsbDto accountDetailsEsbDto, boolean rsExists) {
+        List<AccountInfoDto> goodRecDetails = new ArrayList<>();
+        AccountInfoDto accountInfo = null;
+        String employerId = accountDetailsEsbDto.getEmployerId();
+        employerId = StringUtil.getTrimmedStringUpperCase(employerId);
+
+        if (rsExists) {
+            //// while(nrs.next()){//if reseult set to iterate
+            accountInfo = getAccountInfoDto(); // Pass Resultset if connceted with D
+            goodRecDetails.add(accountInfo);
+            // }
+        }
+        accountDetailsEsbDto.setEnrlErrorRec(goodRecDetails);
+        return accountDetailsEsbDto;
+    }
+
+    private AccountInfoDto getAccountInfoDto() {
+        AccountInfoDto accountInfo = new AccountInfoDto();
+        accountInfo.setEmployerGroupId("704280BCC");
+        accountInfo.setFirstName("Robin");
+        accountInfo.setMiddleInitial("");
+        accountInfo.setLastName(("Raj"));
+        accountInfo.setSocialSecurityNumber("105460244");
+        accountInfo.setEmployerName(AccountDetailsEsbConstants.ORG_NAME);
+        return accountInfo;
+    }
+
+    private List<AccountInfoDto> getAccountInfoDtoList() {
+        List<AccountInfoDto> accountInfoList = new ArrayList<>();
+        var accountInfo = new AccountInfoDto();
+        accountInfo.setEmployerGroupId("730061B"); // rs.getString("CUSTOMER_POLICY_NBR"));
+        accountInfo.setFirstName("JOYCE"); // rs.getString("ACCOUNTHOLDER_FIRST_NM"));
+        accountInfo.setMiddleInitial(""); // rs.getString("ACCOUNTHOLDER_MIDDLE_INIT_NM"));
+        accountInfo.setLastName("GRANT"); // rs.getString("ACCOUNTHOLDER_LAST_NM"));
+        accountInfo.setSocialSecurityNumber("251110091"); // rs.getString("SOCIAL_SECURITY_NBR"));
+        accountInfo.setAccountNumber("405981141"); // rs.getString("ACCOUNT_NBR"));
+        accountInfo.setAccountOpenDate(new Date()); // rs.getDate("ACCOUNT_OPEN_DT"));
+        accountInfo.setAcctStatuscode("A"); // rs.getString("ACCOUNT_STATUS_CD"));
+        accountInfo.setEffectiveTermDate(new Date()); // rs.getDate("TRM_EFF_DT"));
+        accountInfo.setRoutingNumber("124384877"); // rs.getString("ROUTING_NBR"));
+        accountInfo.setEmployerName(
+                AccountDetailsEsbConstants.ORG_NAME); // rs.getString("ORGANIZATION_NM"));
+
+        accountInfoList.add(accountInfo);
+        var accountInfo1 = new AccountInfoDto();
+        accountInfo1.setEmployerGroupId("730061B"); // rs.getString("CUSTOMER_POLICY_NBR"));
+        accountInfo1.setFirstName("WOJCIECH"); // rs.getString("ACCOUNTHOLDER_FIRST_NM"));
+        accountInfo1.setMiddleInitial(""); // rs.getString("ACCOUNTHOLDER_MIDDLE_INIT_NM"));
+        accountInfo1.setLastName("BALCEWICZ"); // rs.getString("ACCOUNTHOLDER_LAST_NM"));
+        accountInfo1.setSocialSecurityNumber("105460244"); // rs.getString("SOCIAL_SECURITY_NBR"));
+        accountInfo1.setAccountNumber("404743908"); // rs.getString("ACCOUNT_NBR"));
+        accountInfo1.setAccountOpenDate(new Date()); // rs.getDate("ACCOUNT_OPEN_DT"));
+        accountInfo1.setAcctStatuscode("A"); // rs.getString("ACCOUNT_STATUS_CD"));
+        accountInfo1.setEffectiveTermDate(new Date()); // rs.getDate("TRM_EFF_DT"));
+        accountInfo1.setRoutingNumber("124384877"); // rs.getString("ROUTING_NBR"));
+        accountInfo1.setEmployerName(
+                AccountDetailsEsbConstants.ORG_NAME); // rs.getString("ORGANIZATION_NM"));
+        accountInfoList.add(accountInfo1);
+        return accountInfoList;
+    }
+}
+=========AccountInfoDto========
+package com.optum.ftps.ob.core.account.details.dto.esb;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.Date;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class AccountInfoDto implements Serializable {
+    private String employerGroupId;
+
+    private String firstName;
+
+    private String middleInitial;
+
+    private String lastName;
+
+    private String socialSecurityNumber;
+
+    private String accountNumber;
+
+    private Date accountOpenDate;
+
+    private String acctStatuscode;
+
+    private String acctStatuscodeName;
+
+    private java.util.Date effectiveTermDate;
+
+    private String routingNumber;
+
+    private String employerName;
+}
+============AccountDetailsEsbConstants======
+package com.optum.ftps.ob.core.account.details.constants;
+
+public class AccountDetailsEsbConstants {
+    public static final int ACCOUNT_VERSION_LENGTH = 2;
+    public static final int ACCOUNT_REQUESTID_LENGTH = 36;
+    public static final int ACCOUNT_ID_LENGTH = 65;
+    public static final int MAX_ACCTDTLESB_RECS = 5000;
+    public static final int MAX_RECORDS = 5000;
+    public static final String ACCOUNT_DETAILS_BY_EMPLOYER = "ACTBYEMP";
+    public static final String[] REQUEST_TYPES = {ACCOUNT_DETAILS_BY_EMPLOYER};
+    public static final int REQUEST_TYPE_LENGTH = 20;
+    public static final String ACCTESB_DEF_VER_NO = "01";
+    public static final int REQUEST_SUCCESSFULLY_PROCESSED = 9;
+    public static final int RESULT_TRUNCATED_ADDITIONAL_RECORDS_EXIST = 34;
+    public static final String STATUS_CODE_SUCCESS = "0000";
+    public static final String NULL_STRING = "NULL";
+    public static final String ACCOUNT_STATUS_CODE_ACTIVE = "A";
+    public static final String ACCOUNT_STATUS_CODE_CLOSED = "C";
+    public static final String ACCOUNT_STATUS_CODE_PENDING = "P";
+    public static final String ACCOUNT_STATUS_CODE_TERMINATION = "T";
+    public static final String ACCT_ACT_STS_DESC = "ACTIVE";
+    public static final String ACCT_CLS_STS_DESC = "CLOSED";
+    public static final String ACCT_PND_STS_DESC = "PENDING";
+    public static final String ACCT_TRM_STS_DESC = "PHYSICAL ADDRESS NEEDED";
+    public static final String ORG_NAME = "AGFA MATERIALS";
+}
+================LoggingConstants========
+package com.optum.ftps.ob.core.account.details.constants;
+
+import lombok.Getter;
+
+@Getter
+public enum LoggingConstants {
+    SSN("SSN"),
+    ACCTINFO("AcctInfo"),
+    NAME("Name");
+
+    private final String value;
+
+    LoggingConstants(String value) {
+        this.value = value;
+    }
+}
+==================StringUtil=========================
+package com.optum.ftps.ob.core.account.details.util;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
+import java.util.Objects;
+
+public class StringUtil {
+
+    private StringUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static String loggableString(String string) {
+        var result = "";
+        if (StringUtils.isNotBlank(string)) {
+            result = sanitize(string);
+        }
+        return result;
+    }
+
+    public static boolean isEmpty(String argStr) {
+        return StringUtils.isBlank(argStr);
+    }
+
+    public static String sanitize(String field) {
+        if (null == field) {
+            return null;
+        }
+        return field.trim().replace("\n", "").replace("\r", "");
+    }
+
+    public static boolean isAlphanumeric(String argStr) {
+        if (isEmpty(argStr)) {
+            return true;
+        }
+        var length = argStr.length();
+        for (int i = 0; i < length; i++) {
+            var c = argStr.charAt(i);
+            if (!Character.isDigit(c) && !Character.isLetter(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static String getTrimmedString(String data) {
+        return Objects.nonNull(data) ? data.trim() : null;
+    }
+
+    public static String getTrimmedStringUpperCase(String data) {
+        return Objects.nonNull(data) ? data.trim().toUpperCase() : null;
+    }
+
+    public static boolean isEmptyList(List argList) {
+        boolean status = argList == null || argList.isEmpty();
+
+        return status;
+    }
+}
+================
